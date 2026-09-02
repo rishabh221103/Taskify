@@ -20,6 +20,7 @@ class User extends Authenticatable
         'organization_id',
         'phone_number',
         'title',
+        'color',
     ];
 
     protected $hidden = [
@@ -35,9 +36,55 @@ class User extends Authenticatable
         ];
     }
 
+    public static function generateUniqueColorForOrg(?int $orgId): string
+    {
+        $palette = [
+            '#3B82F6', // Blue
+            '#8B5CF6', // Purple
+            '#EC4899', // Pink
+            '#10B981', // Emerald
+            '#F59E0B', // Amber
+            '#EF4444', // Red
+            '#06B6D4', // Cyan
+            '#F97316', // Orange
+            '#84CC16', // Lime
+            '#6366F1', // Indigo
+            '#14B8A6', // Teal
+            '#D946EF', // Fuchsia
+            '#38BDF8', // Light Blue
+            '#A855F7', // Bright Purple
+            '#FB923C', // Warm Orange
+            '#4ADE80', // Bright Green
+            '#F43F5E', // Rose
+            '#0EA5E9', // Sky Blue
+        ];
+
+        $query = static::query();
+        if ($orgId) {
+            $query->where('organization_id', $orgId);
+        }
+
+        $usedColors = $query->whereNotNull('color')->pluck('color')->map(fn($c) => strtoupper($c))->toArray();
+
+        foreach ($palette as $colorCandidate) {
+            if (!in_array(strtoupper($colorCandidate), $usedColors)) {
+                return $colorCandidate;
+            }
+        }
+
+        $hue = fmod(count($usedColors) * 137.508, 360);
+        return sprintf('hsl(%d, 75%%, 55%%)', (int) $hue);
+    }
+
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->color)) {
+                $user->color = static::generateUniqueColorForOrg($user->organization_id);
+            }
+        });
 
         static::saving(function ($user) {
             if ($user->isDirty('password') && $user->password) {

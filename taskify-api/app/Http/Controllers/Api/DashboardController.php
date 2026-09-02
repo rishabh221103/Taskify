@@ -111,6 +111,8 @@ class DashboardController extends Controller
             return [
                 'id' => (string) $member->id,
                 'name' => explode(' ', $member->name)[0],
+                'full_name' => $member->name,
+                'color' => $member->color,
                 'tasks' => (int) $member->tasks_count,
             ];
         })->toArray();

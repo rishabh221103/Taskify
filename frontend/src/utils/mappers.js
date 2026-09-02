@@ -1,11 +1,24 @@
+const PALETTE = [
+  "#3B82F6", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B", "#EF4444",
+  "#06B6D4", "#F97316", "#84CC16", "#6366F1", "#14B8A6", "#D946EF"
+];
+
+const getColorForUserFallback = (id, name) => {
+  let hash = 0;
+  const str = String(id) + (name || "");
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % PALETTE.length;
+  return PALETTE[index];
+};
+
 export const mapApiUser = (user) => {
   if (!user) return null;
   const nameParts = user.name.split(" ");
   const initials = nameParts.map(p => p[0]).slice(0, 2).join("").toUpperCase();
 
-  const colors = ["#8B5CF6", "#EC4899", "#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
-  const colorIndex = user.name.length % colors.length;
-  const color = colors[colorIndex];
+  const color = user.color || getColorForUserFallback(user.id, user.name);
 
   const role = user.roles && user.roles.length > 0 ? user.roles[0] : "member";
   const rawRole = typeof role === "object" && role !== null && role.name ? role.name : role;
