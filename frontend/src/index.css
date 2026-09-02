@@ -1,0 +1,305 @@
+@import "tailwindcss";
+
+body,
+input,
+button,
+select,
+textarea,
+.font-\[\'Space_Grotesk\'\],
+.font-page-title {
+  font-family: "Open Sans", sans-serif !important;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
+body {
+  background-color: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── Theme variables system ─────────────────────────────────────── */
+:root {
+  --font-page-title: "Open Sans", sans-serif;
+  --bg-base: #1c1f27;
+  --bg-surface: #1d1f21;
+  --bg-elevated: #272f37;
+  --bg-raised: #333;
+  --bg-hover: rgba(255, 255, 255, 0.04);
+  --border-default: #2a2e3a;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  --text-primary: #EDEFF3;
+  --text-secondary: #ccd1df;
+  --text-muted: #98A2B3;
+  --text-disabled: #5e6677;
+
+  --accent-blue: #3b82f6;
+  --accent-blue-light: #7DB3FF;
+  --accent-green: #10b981;
+  --accent-green-light: #6EE7B7;
+  --accent-orange: #ffb454;
+  --accent-purple: #a855f7;
+  --accent-red: #FF6B6B;
+
+  --scrollbar-board-thumb: #2e3340;
+  --scrollbar-board-thumb-hover: #3d4454;
+  --scrollbar-custom-thumb: #2e3340;
+  --scrollbar-custom-thumb-hover: #3d4454;
+
+  /* Status Colors */
+  --status-completed-text: #10b981;
+  --status-completed-bg: rgba(16, 185, 129, 0.08);
+  --status-completed-border: rgba(16, 185, 129, 0.2);
+
+  --status-inprogress-text: #3b82f6;
+  --status-inprogress-bg: rgba(59, 130, 246, 0.08);
+  --status-inprogress-border: rgba(59, 130, 246, 0.2);
+
+  --status-upcoming-text: #a855f7;
+  --status-upcoming-bg: rgba(168, 85, 247, 0.08);
+  --status-upcoming-border: rgba(168, 85, 247, 0.2);
+
+  --status-onhold-text: #ffb454;
+  --status-onhold-bg: rgba(255, 180, 84, 0.08);
+  --status-onhold-border: rgba(255, 180, 84, 0.2);
+
+  --status-notstarted-text: #94a3b8;
+  --status-notstarted-bg: rgba(148, 163, 184, 0.08);
+  --status-notstarted-border: rgba(148, 163, 184, 0.2);
+
+  /* Priorities */
+  --priority-high-text: #FF6B6B;
+  --priority-high-bg: rgba(255, 107, 107, 0.1);
+  --priority-high-border: rgba(255, 107, 107, 0.2);
+
+  --priority-medium-text: #FFB454;
+  --priority-medium-bg: rgba(255, 180, 84, 0.1);
+  --priority-medium-border: rgba(255, 180, 84, 0.2);
+
+  --priority-low-text: #6EE7B7;
+  --priority-low-bg: rgba(110, 231, 183, 0.1);
+  --priority-low-border: rgba(110, 231, 183, 0.2);
+}
+
+html.light {
+  --bg-base: #f0f2f5;
+  --bg-surface: #f8fafc;
+  --bg-elevated: #ffffff;
+  --bg-raised: #f1f5f9;
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --border-default: #e2e8f0;
+  --border-subtle: rgba(0, 0, 0, 0.04);
+
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --text-disabled: #9ca3af;
+
+  --scrollbar-board-thumb: #3a4356;
+  --scrollbar-board-thumb-hover: #4a5468;
+  --scrollbar-custom-thumb: #2b3242;
+  --scrollbar-custom-thumb-hover: #3e485e;
+
+  --accent-blue: #2563eb;
+  --accent-blue-light: #1d4ed8;
+  --accent-green: #059669;
+  --accent-green-light: #047857;
+  --accent-orange: #d97706;
+  --accent-purple: #7e22ce;
+  --accent-red: #dc2626;
+
+  /* Status Colors */
+  --status-completed-text: #059669;
+  --status-completed-bg: rgba(5, 150, 105, 0.08);
+  --status-completed-border: rgba(5, 150, 105, 0.2);
+
+  --status-inprogress-text: #2563eb;
+  --status-inprogress-bg: rgba(37, 99, 235, 0.08);
+  --status-inprogress-border: rgba(37, 99, 235, 0.2);
+
+  --status-upcoming-text: #7e22ce;
+  --status-upcoming-bg: rgba(126, 34, 206, 0.08);
+  --status-upcoming-border: rgba(126, 34, 206, 0.2);
+
+  --status-onhold-text: #d97706;
+  --status-onhold-bg: rgba(217, 119, 6, 0.08);
+  --status-onhold-border: rgba(217, 119, 6, 0.2);
+
+  --status-notstarted-text: #475569;
+  --status-notstarted-bg: rgba(71, 85, 105, 0.08);
+  --status-notstarted-border: rgba(71, 85, 105, 0.2);
+
+  /* Priorities */
+  --priority-high-text: #dc2626;
+  --priority-high-bg: rgba(220, 38, 38, 0.08);
+  --priority-high-border: rgba(220, 38, 38, 0.2);
+
+  --priority-medium-text: #d97706;
+  --priority-medium-bg: rgba(217, 119, 6, 0.08);
+  --priority-medium-border: rgba(217, 119, 6, 0.2);
+
+  --priority-low-text: #059669;
+  --priority-low-bg: rgba(5, 150, 105, 0.08);
+  --priority-low-border: rgba(5, 150, 105, 0.2);
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Global Form Input theme variables and colors mapping */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+  color-scheme: dark;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not(.bg-transparent),
+textarea,
+select {
+  background-color: var(--bg-surface) !important;
+}
+
+html.light input:not([type="checkbox"]):not([type="radio"]),
+html.light textarea,
+html.light select {
+  color-scheme: light;
+}
+
+/* Override hardcoded text-white classes only on form elements when light theme is active */
+html.light input.text-white,
+html.light textarea.text-white,
+html.light select.text-white {
+  color: var(--text-primary) !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"])::placeholder,
+textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Fallback Utility mappings for raw hex selectors */
+.bg-\[\#080808\],
+.bg-\[\#0b0e14\],
+.bg-\[\#0d1117\],
+.bg-\[\#080b11\],
+.bg-\[\#08090c\],
+.bg-\[\#12151d\],
+.bg-\[\#080a0f\] {
+  background-color: var(--bg-surface) !important;
+}
+
+.bg-\[\#1b202a\],
+.bg-\[\#0f1118\] {
+  background-color: var(--bg-elevated) !important;
+}
+
+.bg-\[\#232a36\],
+.bg-\[\#151821\] {
+  background-color: var(--bg-raised) !important;
+}
+
+.border-\[\#2b3242\],
+.border-\[\#20293a\],
+.border-\[\#1b1e26\] {
+  border-color: var(--border-default) !important;
+}
+
+.text-\[\#EDEFF3\] {
+  color: var(--text-primary) !important;
+}
+
+.text-\[\#8A94A6\] {
+  color: var(--text-muted) !important;
+}
+
+.text-\[\#4d5668\] {
+  color: var(--text-disabled) !important;
+}
+
+.text-\[\#c3c8d4\] {
+  color: var(--text-secondary) !important;
+}
+
+.border-\[\#2b3242\]\/10,
+.border-\[\#2b3242\]\/20,
+.border-\[\#2b3242\]\/30 {
+  border-color: var(--border-default) !important;
+}
+
+.bg-\[\#12151d\]\/30,
+.bg-\[\#12151d\]\/40 {
+  background-color: var(--bg-surface) !important;
+}
+
+.text-\[\#7DB3FF\] {
+  color: var(--accent-blue-light) !important;
+}
+
+.text-\[\#6EE7B7\] {
+  color: var(--accent-green-light) !important;
+}
+
+.board-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-board-thumb) transparent;
+}
+
+.board-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.board-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.board-scroll::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-board-thumb);
+  border-radius: 999px;
+}
+
+.board-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-board-thumb-hover);
+}
+
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-custom-thumb) transparent;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-custom-thumb);
+  border-radius: 999px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-custom-thumb-hover);
+}
+
+/* Modal entrance animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
