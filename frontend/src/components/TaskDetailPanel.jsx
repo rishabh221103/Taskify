@@ -55,6 +55,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
   const [localAssignees, setLocalAssignees] = useState(tasks.find((t) => String(t.id) === String(taskId))?.assignees || []);
   const [priorityOpen, setPriorityOpen] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, itemName: "", itemLabel: "", onConfirm: null });
 
   // Redesign state additions
   const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
@@ -316,32 +317,40 @@ export default function TaskDetailPanel({ taskId, onClose }) {
     }
   };
 
-  const deleteSubtask = async (subId) => {
-    try {
-      await apiRequest(`/api/subtasks/${subId}`, {
-        method: "DELETE",
-      });
+  const handleDeleteSubtask = (subId) => {
+    const subObj = (task.subtasks || []).find((s) => s.id === subId);
+    setDeleteDialog({
+      isOpen: true,
+      itemName: "subtask",
+      itemLabel: subObj?.title || "subtask",
+      onConfirm: async () => {
+        setDeleteDialog(prev => ({ ...prev, isOpen: false }));
+        try {
+          await apiRequest(`/api/subtasks/${subId}`, {
+            method: "DELETE",
+          });
 
-      const subObj = (task.subtasks || []).find((s) => s.id === subId);
-      setTasks(prev => prev.map(t => {
-        if (t.id === task.id) {
-          const subtasks = t.subtasks || [];
-          const nextSubtasks = subtasks.filter((s) => s.id !== subId);
-          const totalCount = nextSubtasks.length;
-          const doneCount = nextSubtasks.filter(s => s.done).length;
-          return {
-            ...t,
-            subtasks: nextSubtasks,
-            sub: [doneCount, totalCount],
-          };
+          setTasks(prev => prev.map(t => {
+            if (t.id === task.id) {
+              const subtasks = t.subtasks || [];
+              const nextSubtasks = subtasks.filter((s) => s.id !== subId);
+              const totalCount = nextSubtasks.length;
+              const doneCount = nextSubtasks.filter(s => s.done).length;
+              return {
+                ...t,
+                subtasks: nextSubtasks,
+                sub: [doneCount, totalCount],
+              };
+            }
+            return t;
+          }));
+
+          logActivity(`deleted subtask "${subObj?.title}"`);
+        } catch (err) {
+          console.error(err);
         }
-        return t;
-      }));
-
-      logActivity(`deleted subtask "${subObj?.title}"`);
-    } catch (err) {
-      console.error(err);
-    }
+      }
+    });
   };
 
   // Attachments management
@@ -363,9 +372,17 @@ export default function TaskDetailPanel({ taskId, onClose }) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleDeleteAttachment = async (attId, name) => {
-    await deleteAttachment(attId);
-    logActivity(`removed attachment "${name}"`);
+  const handleDeleteAttachment = (attId, name) => {
+    setDeleteDialog({
+      isOpen: true,
+      itemName: "attachment",
+      itemLabel: name,
+      onConfirm: async () => {
+        setDeleteDialog(prev => ({ ...prev, isOpen: false }));
+        await deleteAttachment(attId);
+        logActivity(`removed attachment "${name}"`);
+      }
+    });
   };
 
   // Add Comment
@@ -844,7 +861,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
                       {sub.title}
                     </span>
                     <button
-                      onClick={() => deleteSubtask(sub.id)}
+                      onClick={() => handleDeleteSubtask(sub.id)}
                       className="text-[var(--text-muted)] hover:text-[var(--priority-high-text)] p-1 rounded-lg hover:bg-[var(--priority-high-text)]/10 transition-colors cursor-pointer"
                     >
                       <Trash2 size={12} />
@@ -1039,17 +1056,22 @@ export default function TaskDetailPanel({ taskId, onClose }) {
       </div>
 
       <ConfirmDialog
-        isOpen={confirmOpen}
-        title="Delete Task"
-        message="Are you sure you want to delete this task? This action is permanent and cannot be undone."
-        confirmText="Delete"
-        isDestructive={true}
+        isOpen={confirmOpen || deleteDialog.isOpen}
+        itemName={deleteDialog.itemName || "task"}
+        itemLabel={deleteDialog.itemLabel || task.title}
         onConfirm={() => {
-          deleteTask(task.id);
-          setConfirmOpen(false);
-          handleClose();
+          if (deleteDialog.isOpen && deleteDialog.onConfirm) {
+            deleteDialog.onConfirm();
+          } else {
+            deleteTask(task.id);
+            setConfirmOpen(false);
+            handleClose();
+          }
         }}
-        onCancel={() => setConfirmOpen(false)}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setDeleteDialog(prev => ({ ...prev, isOpen: false }));
+        }}
       />
 
       <style>{`

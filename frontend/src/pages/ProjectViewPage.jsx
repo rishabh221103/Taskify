@@ -894,10 +894,19 @@ export default function ProjectViewPage() {
   };
 
   const handleDeleteFile = (fileId) => {
-    setProjectFiles((prev) => {
-      const file = prev.find((f) => f.id === fileId);
-      if (file?.url) URL.revokeObjectURL(file.url);
-      return prev.filter((f) => f.id !== fileId);
+    const file = projectFiles.find((f) => f.id === fileId);
+    setConfirmDialog({
+      isOpen: true,
+      itemName: "file",
+      itemLabel: file?.name || "file",
+      onConfirm: () => {
+        setProjectFiles((prev) => {
+          const fObj = prev.find((f) => f.id === fileId);
+          if (fObj?.url) URL.revokeObjectURL(fObj.url);
+          return prev.filter((f) => f.id !== fileId);
+        });
+        setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+      }
     });
   };
 

@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { MEMBER_FILTERS } from "../data/mockData";
 import { Search, SlidersHorizontal, Plus, User, MessageSquare, X, Trash2, Edit2 } from "lucide-react";
+import ConfirmDialog from "./modals/ConfirmDialog";
 
 const card = "bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-2xl";
 const display = "font-['Space_Grotesk']";
@@ -34,6 +35,7 @@ export default function TeamMembers({ isDashboard = false }) {
     updateMember,
   } = useContext(AppContext);
 
+  const [confirmDeleteMember, setConfirmDeleteMember] = useState(null);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [inviteError, setInviteError] = useState("");
   const [inviting, setInviting] = useState(false);
@@ -179,18 +181,9 @@ export default function TeamMembers({ isDashboard = false }) {
               </button>
             )}
             <button
-              onClick={async (e) => {
+              onClick={(e) => {
                 e.stopPropagation();
-                const confirm = window.confirm(`Are you sure you want to remove ${m.name}?`);
-                if (!confirm) return;
-                try {
-                  await apiRequest(`/api/members/${m.id}`, { method: "DELETE" });
-                  await fetchTenantData();
-                  await fetchDashboardData();
-                } catch (err) {
-                  console.error(err);
-                  alert(err.message || "Failed to remove member.");
-                }
+                setConfirmDeleteMember(m);
               }}
               className={BTN_DANGER}
               title={`Remove ${m.name}`}
@@ -584,6 +577,26 @@ export default function TeamMembers({ isDashboard = false }) {
           </div>
         </div>
       )}
+      {/* Confirm Delete Member Dialog */}
+      <ConfirmDialog
+        isOpen={Boolean(confirmDeleteMember)}
+        itemName="member"
+        itemLabel={confirmDeleteMember?.name}
+        onConfirm={async () => {
+          if (!confirmDeleteMember) return;
+          const targetId = confirmDeleteMember.id;
+          setConfirmDeleteMember(null);
+          try {
+            await apiRequest(`/api/members/${targetId}`, { method: "DELETE" });
+            await fetchTenantData();
+            await fetchDashboardData();
+          } catch (err) {
+            console.error(err);
+            alert(err.message || "Failed to remove member.");
+          }
+        }}
+        onCancel={() => setConfirmDeleteMember(null)}
+      />
     </div>
   );
 }

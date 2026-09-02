@@ -5,10 +5,12 @@ export default function ConfirmDialog({
   isOpen,
   title,
   message,
+  itemName,
+  itemLabel,
   type = "confirm", // "confirm" | "alert"
-  confirmText = "Confirm",
+  confirmText = "Delete",
   cancelText = "Cancel",
-  isDestructive = false,
+  isDestructive = true,
   onConfirm,
   onCancel
 }) {
@@ -26,6 +28,12 @@ export default function ConfirmDialog({
 
   if (!isOpen) return null;
 
+  const displayTitle = title || (itemName ? `Delete ${itemName.charAt(0).toUpperCase() + itemName.slice(1)}` : "Confirm Deletion");
+  const displayMessage = message || (itemLabel
+    ? `Are you sure you want to delete "${itemLabel}"? This action is permanent and cannot be undone.`
+    : `Are you sure you want to delete this ${itemName || "item"}? This action is permanent and cannot be undone.`
+  );
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
       <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-2xl w-full max-w-sm shadow-2xl p-5 relative flex flex-col gap-4 animate-fadeInScale">
@@ -42,13 +50,13 @@ export default function ConfirmDialog({
         <div className="flex items-center gap-2">
           {isDestructive && <AlertTriangle size={16} className="text-red-500 shrink-0" />}
           <h3 className="font-['Space_Grotesk'] font-bold text-sm text-[var(--text-primary)]">
-            {title}
+            {displayTitle}
           </h3>
         </div>
 
         {/* Message */}
         <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
-          {message}
+          {displayMessage}
         </p>
 
         {/* Action Buttons */}
