@@ -195,6 +195,14 @@ export default function TeamMembers({ isDashboard = false }) {
 
         {/* Details */}
         <div className="text-xs space-y-2 mt-2">
+          {(m.unique_id || m.member_id) && (
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--text-muted)] w-14 shrink-0">Member ID</span>
+              <span className="text-[var(--text-primary)] font-mono text-[11px] font-semibold bg-[var(--bg-raised)] px-1.5 py-0.5 rounded border border-[var(--border-default)]">
+                {m.unique_id || m.member_id}
+              </span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span className="text-[var(--text-muted)] w-14 shrink-0">Email</span>
             <span className="text-[var(--text-primary)] truncate select-all">{m.email}</span>

@@ -14,6 +14,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
+        'unique_id',
         'name',
         'email',
         'password',
@@ -34,6 +35,27 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public static function generateUniqueId(?int $orgId = null): string
+    {
+        $lastUser = static::whereNotNull('unique_id')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $nextNumber = 1;
+        if ($lastUser && preg_match('/(?:MEM|UID)-(\d+)/', $lastUser->unique_id, $matches)) {
+            $nextNumber = (int) $matches[1] + 1;
+        }
+
+        do {
+            $candidate = 'MEM-' . str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
+            $exists = static::where('unique_id', $candidate)->exists();
+            if (!$exists) {
+                return $candidate;
+            }
+            $nextNumber++;
+        } while (true);
     }
 
     public static function generateUniqueColorForOrg(?int $orgId): string
@@ -84,6 +106,9 @@ class User extends Authenticatable
             if (empty($user->color)) {
                 $user->color = static::generateUniqueColorForOrg($user->organization_id);
             }
+            if (empty($user->unique_id)) {
+                $user->unique_id = static::generateUniqueId($user->organization_id);
+            }
         });
 
         static::saving(function ($user) {
@@ -108,10 +133,5 @@ class User extends Authenticatable
     public function tasks()
     {
         return $this->belongsToMany(Task::class, 'task_user');
-    }
-
-    public function teamMember()
-    {
-        return $this->hasOne(TeamMember::class);
     }
 }
