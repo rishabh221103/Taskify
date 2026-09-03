@@ -143,6 +143,7 @@ class MessageController extends Controller
             })
             ->with(['sender', 'recipient'])
             ->orderBy('created_at', 'asc')
+            ->orderBy('id', 'asc')
             ->get()
             ->map(function ($msg) {
                 return [

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InviteMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 use App\Http\Resources\UserResource;
+use App\Models\TeamMember;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,6 +46,18 @@ class MemberController extends Controller
         \Spatie\Permission\Models\Role::findOrCreate('member');
         $user->assignRole('member');
 
+        // Record in dedicated team_members table for members only
+        TeamMember::create([
+            'user_id' => $user->id,
+            'organization_id' => $user->organization_id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone_number' => $user->phone_number,
+            'title' => $user->title,
+            'status' => 'active',
+            'joined_date' => now(),
+        ]);
+
         // Automatically send welcome email notification
         $user->notify(new MemberWelcome($defaultPassword));
 
@@ -78,6 +91,17 @@ class MemberController extends Controller
             'phone_number' => $validated['phone_number'] ?? $member->phone_number,
             'title' => $validated['title'],
         ]);
+
+        $member->teamMember()->updateOrCreate(
+            ['user_id' => $member->id],
+            [
+                'organization_id' => $member->organization_id,
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone_number' => $validated['phone_number'] ?? $member->phone_number,
+                'title' => $validated['title'],
+            ]
+        );
 
         return response()->json([
             'message' => 'Member updated successfully.',

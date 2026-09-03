@@ -80,17 +80,19 @@ class AttendanceController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $hours = $this->calculateHours($validated['check_in'] ?? null, $validated['check_out'] ?? null);
+        $checkIn = !empty($validated['check_in']) ? $validated['check_in'] : '--';
+        $checkOut = !empty($validated['check_out']) ? $validated['check_out'] : '--';
+        $hours = $this->calculateHours($checkIn, $checkOut);
 
         $record = Attendance::updateOrCreate(
             [
+                'organization_id' => $orgId,
                 'user_id' => $validated['user_id'],
                 'date' => $validated['date'],
             ],
             [
-                'organization_id' => $orgId,
-                'check_in' => $validated['check_in'] ?: '--',
-                'check_out' => $validated['check_out'] ?: '--',
+                'check_in' => $checkIn,
+                'check_out' => $checkOut,
                 'status' => $validated['status'],
                 'hours' => $hours,
             ]

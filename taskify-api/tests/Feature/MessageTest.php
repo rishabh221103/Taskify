@@ -125,4 +125,39 @@ class MessageTest extends TestCase
             ->assertJsonCount(1, 'conversations')
             ->assertJsonPath('conversations.0.user.id', (string) $this->owner->id);
     }
+
+    public function test_all_messages_are_saved_in_database_and_retrieved_in_order(): void
+    {
+        // 1. Owner sends message
+        $this->actingAs($this->owner)->postJson('/api/messages', [
+            'recipient_id' => $this->member1->id,
+            'body' => 'Message 1 from Owner',
+        ]);
+
+        // 2. Member 1 replies
+        $this->actingAs($this->member1)->postJson('/api/messages', [
+            'recipient_id' => $this->owner->id,
+            'body' => 'Message 2 from Member 1',
+        ]);
+
+        // 3. Owner sends another message
+        $this->actingAs($this->owner)->postJson('/api/messages', [
+            'recipient_id' => $this->member1->id,
+            'body' => 'Message 3 from Owner',
+        ]);
+
+        // Verify all 3 messages are persisted in MySQL `messages` table
+        $this->assertDatabaseCount('messages', 3);
+        $this->assertDatabaseHas('messages', ['body' => 'Message 1 from Owner']);
+        $this->assertDatabaseHas('messages', ['body' => 'Message 2 from Member 1']);
+        $this->assertDatabaseHas('messages', ['body' => 'Message 3 from Owner']);
+
+        // Verify thread retrieval returns all 3 messages in chronological order
+        $response = $this->actingAs($this->owner)->getJson("/api/messages/{$this->member1->id}");
+        $response->assertStatus(200)
+            ->assertJsonCount(3, 'messages')
+            ->assertJsonPath('messages.0.body', 'Message 1 from Owner')
+            ->assertJsonPath('messages.1.body', 'Message 2 from Member 1')
+            ->assertJsonPath('messages.2.body', 'Message 3 from Owner');
+    }
 }

@@ -62,11 +62,18 @@ export default function AttendancePage() {
   const [wfhMode, setWfhMode] = useState("Office");
   const [wfhSchedule, setWfhSchedule] = useState({ Mon: "Office", Tue: "Office", Wed: "Office", Thu: "Office", Fri: "Office" });
 
-  const [calendarMonth, setCalendarMonth] = useState(new Date(2026, 7, 1)); // August 2026
-  const [selectedCalendarDay, setSelectedCalendarDay] = useState(17);
+  const now = new Date();
+  const [calendarMonth, setCalendarMonth] = useState(new Date(now.getFullYear(), now.getMonth(), 1));
+  const [selectedCalendarDay, setSelectedCalendarDay] = useState(now.getDate());
 
   const dateStr = calendarMonth.getFullYear() + "-" + String(calendarMonth.getMonth() + 1).padStart(2, '0') + "-" + String(selectedCalendarDay).padStart(2, '0');
   const monthStr = calendarMonth.getFullYear() + "-" + String(calendarMonth.getMonth() + 1).padStart(2, '0');
+
+  const [localRecords, setLocalRecords] = useState(dailyRecords || []);
+
+  useEffect(() => {
+    setLocalRecords(dailyRecords || []);
+  }, [dailyRecords]);
 
   // Calculation helper
   const calculateHours = (inStr, outStr) => {
@@ -115,7 +122,7 @@ export default function AttendancePage() {
     }
   }, [members]);
 
-  const currentRecords = dailyRecords;
+  const currentRecords = localRecords;
   const countStatus = (status) => currentRecords.filter(r => r.status === status).length;
 
   const CALENDAR_STATUSES = {};
@@ -132,8 +139,54 @@ export default function AttendancePage() {
     setEditStatus(rec.status);
   };
 
+  const quickCycleStatus = async (rec) => {
+    const cycle = ["Present", "Late", "Absent", "Half Day"];
+    const currentIdx = cycle.indexOf(rec.status);
+    const nextStatus = cycle[(currentIdx + 1) % cycle.length];
+
+    setLocalRecords(prev => prev.map(r => {
+      if (String(r.id) === String(rec.id)) {
+        return { ...r, status: nextStatus };
+      }
+      return r;
+    }));
+
+    try {
+      await apiRequest("/api/attendance", {
+        method: "POST",
+        body: JSON.stringify({
+          user_id: rec.id,
+          date: dateStr,
+          check_in: rec.check_in === "--" ? "" : rec.check_in,
+          check_out: rec.check_out === "--" ? "" : rec.check_out,
+          status: nextStatus,
+        }),
+      });
+      revalidator.revalidate();
+    } catch (e) {
+      console.error(e);
+      alert(e.message || "Failed to update attendance.");
+    }
+  };
+
   const handleSaveEdit = async () => {
     if (!editingRecord) return;
+
+    const computedHours = calculateHours(editIn, editOut);
+
+    setLocalRecords(prev => prev.map(r => {
+      if (String(r.id) === String(editingRecord.id)) {
+        return {
+          ...r,
+          status: editStatus,
+          check_in: editIn || "--",
+          check_out: editOut || "--",
+          hours: computedHours,
+        };
+      }
+      return r;
+    }));
+
     try {
       await apiRequest("/api/attendance", {
         method: "POST",
@@ -243,7 +296,7 @@ export default function AttendancePage() {
         </div>
         <div className="flex items-center gap-2 bg-[var(--bg-elevated)] border border-[var(--border-default)] px-4 py-2 rounded-xl text-sm font-semibold text-[var(--text-muted)]">
           <CalendarIcon size={15} />
-          <span>August 17th, 2026</span>
+          <span>{calendarMonth.toLocaleString("default", { month: "long" })} {selectedCalendarDay}, {calendarMonth.getFullYear()}</span>
         </div>
       </div>
 
@@ -410,7 +463,7 @@ export default function AttendancePage() {
         <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
           <div>
             <h3 className={`${display} font-bold text-lg text-[var(--text-primary)]`}>Daily Attendance</h3>
-            <p className={`text-xs ${muted} mt-0.5`}>Attendance records for Aug {selectedCalendarDay}, 2026</p>
+            <p className={`text-xs ${muted} mt-0.5`}>Attendance records for {calendarMonth.toLocaleString("default", { month: "short" })} {selectedCalendarDay}, {calendarMonth.getFullYear()}</p>
           </div>
           <div className="flex items-center gap-4 flex-wrap text-xs">
             <div className="flex items-center gap-3">
@@ -475,9 +528,13 @@ export default function AttendancePage() {
                     <td className="py-3.5 px-4 font-medium text-[var(--text-primary)]">{r.check_in}</td>
                     <td className="py-3.5 px-4 font-medium text-[var(--text-primary)]">{r.check_out}</td>
                     <td className="py-3.5 px-4">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${STATUS_COLORS[r.status]}`}>
+                      <button
+                        onClick={() => quickCycleStatus(r)}
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer hover:opacity-80 transition-opacity ${STATUS_COLORS[r.status]}`}
+                        title="Click to cycle attendance status"
+                      >
                         {r.status}
-                      </span>
+                      </button>
                     </td>
                     <td className="py-3.5 px-4 font-medium text-[var(--text-primary)]">{r.hours}</td>
                     <td className="py-3.5 pl-4 text-right">

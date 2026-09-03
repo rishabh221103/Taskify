@@ -109,4 +109,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Task::class, 'task_user');
     }
+
+    public function teamMember()
+    {
+        return $this->hasOne(TeamMember::class);
+    }
 }

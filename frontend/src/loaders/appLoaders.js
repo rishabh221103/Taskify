@@ -164,8 +164,8 @@ export async function dashboardLoader() {
 
 export async function attendanceLoader({ request }) {
   const url = new URL(request.url);
-  const defaultDateStr = "2026-08-17";
-  const dateStr = url.searchParams.get("date") || defaultDateStr;
+  const todayStr = new Date().toISOString().split("T")[0];
+  const dateStr = url.searchParams.get("date") || todayStr;
   const monthStr = url.searchParams.get("month") || dateStr.slice(0, 7);
 
   try {
