@@ -10,16 +10,25 @@ use App\Models\Project;
 use App\Notifications\ProjectAssigned;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProjectController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $projects = Project::with(['manager', 'users', 'sections'])
-            ->withCount(['tasks', 'tasks as completed_tasks_count' => function ($query) {
-                $query->where('status', 'done');
-            }])
+        $orgId = $request->user()->organization_id;
+
+        $projects = Project::where('organization_id', $orgId)
+            ->with(['manager', 'users', 'sections'])
+            ->withCount([
+                'tasks' => function ($query) use ($orgId) {
+                    $query->where('organization_id', $orgId);
+                },
+                'tasks as completed_tasks_count' => function ($query) use ($orgId) {
+                    $query->where('organization_id', $orgId)->where('status', 'done');
+                },
+            ])
             ->get();
 
         return ProjectResource::collection($projects);

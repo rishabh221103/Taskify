@@ -53,12 +53,9 @@ export async function adminRootLoader() {
       tasks: (tasksData.data || []).map(mapApiTask),
     };
   } catch (err) {
-    if (err.status === 401) {
-      sessionStorage.removeItem("authToken");
-      sessionStorage.removeItem("currentUserId");
-      return redirect("/login");
-    }
-    throw err;
+    sessionStorage.removeItem("authToken");
+    sessionStorage.removeItem("currentUserId");
+    return redirect("/login");
   }
 }
 
@@ -90,12 +87,9 @@ export async function memberRootLoader() {
       tasks: (tasksData.data || []).map(mapApiTask),
     };
   } catch (err) {
-    if (err.status === 401) {
-      sessionStorage.removeItem("authToken");
-      sessionStorage.removeItem("currentUserId");
-      return redirect("/login");
-    }
-    throw err;
+    sessionStorage.removeItem("authToken");
+    sessionStorage.removeItem("currentUserId");
+    return redirect("/login");
   }
 }
 
@@ -155,10 +149,11 @@ export async function dashboardLoader() {
       stats: summary.stats,
       throughput: summary.throughput,
       workload: summary.workload,
+      project_progress: summary.project_progress || [],
     };
   } catch (err) {
     console.error("Dashboard loader error:", err);
-    return { stats: null, throughput: [], workload: [] };
+    return { stats: null, throughput: [], workload: [], project_progress: [] };
   }
 }
 

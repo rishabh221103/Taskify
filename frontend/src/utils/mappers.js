@@ -74,7 +74,11 @@ export const mapApiProject = (p) => {
     percent: p.progress || 0,
     members: p.users ? p.users.map(u => String(u.id)) : [],
     updatedAt: p.updated_at,
-    sections: p.sections ? p.sections.map(s => ({ id: String(s.id), name: s.name })) : [],
+    sections: p.sections
+      ? [...p.sections]
+          .sort((a, b) => (Number(a.order ?? 0) - Number(b.order ?? 0)) || (Number(a.id) - Number(b.id)))
+          .map(s => ({ id: String(s.id), name: s.name, order: Number(s.order ?? 0) }))
+      : [],
   };
 };
 

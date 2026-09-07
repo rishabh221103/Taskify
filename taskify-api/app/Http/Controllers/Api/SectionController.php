@@ -44,4 +44,27 @@ class SectionController extends Controller
 
         return response()->json(['message' => 'Section deleted successfully']);
     }
+
+    public function reorder(Request $request, Project $project): JsonResponse
+    {
+        $validated = $request->validate([
+            'section_ids' => 'required|array',
+            'section_ids.*' => 'required|integer',
+        ]);
+
+        $sectionIds = $validated['section_ids'];
+
+        foreach ($sectionIds as $index => $id) {
+            $project->sections()
+                ->where('id', $id)
+                ->update(['order' => $index]);
+        }
+
+        $sections = $project->sections()->orderBy('order', 'asc')->orderBy('id', 'asc')->get();
+
+        return response()->json([
+            'message' => 'Sections reordered successfully',
+            'sections' => SectionResource::collection($sections),
+        ]);
+    }
 }

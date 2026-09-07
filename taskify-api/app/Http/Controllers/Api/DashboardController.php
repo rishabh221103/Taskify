@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProjectResource;
+use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +14,25 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    private function getProjectProgressData(Request $request): array
+    {
+        $orgId = $request->user()->organization_id;
+
+        $projects = Project::where('organization_id', $orgId)
+            ->with(['manager', 'users', 'sections'])
+            ->withCount([
+                'tasks' => function ($query) use ($orgId) {
+                    $query->where('organization_id', $orgId);
+                },
+                'tasks as completed_tasks_count' => function ($query) use ($orgId) {
+                    $query->where('organization_id', $orgId)->where('status', 'done');
+                },
+            ])
+            ->get();
+
+        return ProjectResource::collection($projects)->resolve();
+    }
+
     private function getStatsData(Request $request): array
     {
         $orgId = $request->user()->organization_id;
@@ -133,12 +154,20 @@ class DashboardController extends Controller
         return response()->json($this->getWorkloadData($request));
     }
 
+    public function projectProgress(Request $request): JsonResponse
+    {
+        return response()->json([
+            'data' => $this->getProjectProgressData($request),
+        ]);
+    }
+
     public function summary(Request $request): JsonResponse
     {
         return response()->json([
             'stats' => $this->getStatsData($request),
             'throughput' => $this->getThroughputData($request),
             'workload' => $this->getWorkloadData($request),
+            'project_progress' => $this->getProjectProgressData($request),
         ]);
     }
 }

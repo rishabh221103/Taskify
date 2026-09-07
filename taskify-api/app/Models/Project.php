@@ -42,7 +42,7 @@ class Project extends Model
 
     public function sections()
     {
-        return $this->hasMany(Section::class);
+        return $this->hasMany(Section::class)->orderBy('order', 'asc')->orderBy('id', 'asc');
     }
 
     public function tasks()

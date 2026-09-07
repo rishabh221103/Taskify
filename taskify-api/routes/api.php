@@ -52,12 +52,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
         Route::get('/dashboard/throughput', [DashboardController::class, 'throughput']);
         Route::get('/dashboard/workload', [DashboardController::class, 'workload']);
+        Route::get('/dashboard/project-progress', [DashboardController::class, 'projectProgress']);
 
         // Org-wide Projects
         Route::apiResource('projects', ProjectController::class);
 
         // Sections
         Route::post('/projects/{project}/sections', [SectionController::class, 'store']);
+        Route::patch('/projects/{project}/sections/reorder', [SectionController::class, 'reorder']);
         Route::patch('/sections/{section}', [SectionController::class, 'update']);
         Route::delete('/sections/{section}', [SectionController::class, 'destroy']);
 

@@ -58,6 +58,16 @@ export default function AnalyticsCharts() {
   // Use weekly throughput from backend
   const weeklyThroughput = dashboardThroughput || [];
 
+  // Dynamically calculate project progress from real-time task data, falling back to project.percent from API
+  const getProjectProgress = (proj) => {
+    const projTasks = tasks.filter((t) => String(t.projectId) === String(proj.id));
+    if (projTasks.length > 0) {
+      const completedCount = projTasks.filter((t) => t.column === "Done" || t.status === "done" || Boolean(t.is_completed)).length;
+      return Math.round((completedCount / projTasks.length) * 100);
+    }
+    return proj.percent !== undefined ? proj.percent : 0;
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {/* Weekly throughput chart */}
@@ -107,65 +117,70 @@ export default function AnalyticsCharts() {
         </div>
       </div>
 
-      {/* Project Status */}
-      <div className={`${card} p-4`}>
-        <h3 className={`${display} font-semibold mb-4`}>Project Status</h3>
-        <div className="flex flex-col gap-3">
-          {projects.map((p) => {
-            const meta = PROJECT_STATUS_META[p.status];
-            const Icon = meta.icon;
-            return (
-              <button
-                key={p.id}
-                onClick={() => setProjectModal(p.id)}
-                className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-raised)] p-3 text-left hover:border-[#3a4356] transition-colors cursor-pointer"
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: `${meta.color}22` }}
-                  >
-                    <Icon size={16} style={{ color: meta.color }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium truncate">{p.name}</p>
-                      <span
-                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
-                        style={{ color: meta.color, background: `${meta.color}22` }}
-                      >
-                        {p.status}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between mt-0.5">
-                      <span className={`text-xs ${muted}`}>{p.percent}% Complete</span>
-                      <span className={`text-[10px] flex items-center gap-1 ${muted}`}>
-                        <CalendarDays size={11} /> {p.due}
-                      </span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-[var(--bg-elevated)] mt-2 overflow-hidden">
-                      <div
-                        className="h-full rounded-full"
-                        style={{ width: `${p.percent}%`, background: meta.color }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Project Progress */}
       <div className={`${card} p-4`}>
         <h3 className={`${display} font-semibold mb-4`}>Project Progress</h3>
+        <div className="flex flex-col gap-3">
+          {projects.length === 0 ? (
+            <p className={`text-xs ${muted} py-4 text-center`}>No projects yet</p>
+          ) : (
+            projects.map((p) => {
+              const meta = PROJECT_STATUS_META[p.status] || PROJECT_STATUS_META["Upcoming"];
+              const Icon = meta.icon;
+              const percent = getProjectProgress(p);
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setProjectModal(p.id)}
+                  className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-raised)] p-3 text-left hover:border-[#3a4356] transition-colors cursor-pointer"
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                      style={{ background: `${meta.color}22` }}
+                    >
+                      <Icon size={16} style={{ color: meta.color }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-medium truncate">{p.name}</p>
+                        <span
+                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+                          style={{ color: meta.color, background: `${meta.color}22` }}
+                        >
+                          {p.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-0.5">
+                        <span className={`text-xs ${muted}`}>{percent}% Complete</span>
+                        <span className={`text-[10px] flex items-center gap-1 ${muted}`}>
+                          <CalendarDays size={11} /> {p.due}
+                        </span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-[var(--bg-elevated)] mt-2 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-300"
+                          style={{ width: `${percent}%`, background: meta.color }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Overall Progress & Milestones */}
+      <div className={`${card} p-4`}>
+        <h3 className={`${display} font-semibold mb-4`}>Milestones</h3>
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm">Overall Progress</span>
           <span className={`${display} text-sm font-semibold`}>{overallProgress}%</span>
         </div>
         <div className="h-1.5 rounded-full bg-[var(--bg-raised)] mb-5 overflow-hidden">
-          <div className="h-full rounded-full bg-[var(--accent-blue-light)]" style={{ width: `${overallProgress}%` }} />
+          <div className="h-full rounded-full bg-[var(--accent-blue-light)] transition-all duration-300" style={{ width: `${overallProgress}%` }} />
         </div>
         <div className="flex flex-col gap-1">
           {milestones.map((m) => (

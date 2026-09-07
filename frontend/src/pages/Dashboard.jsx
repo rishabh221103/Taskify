@@ -16,14 +16,56 @@ const muted = "text-[var(--text-muted)]";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { stats, throughput, workload } = useLoaderData();
-  const { currentUser, exportTasksCsv, setDashboardStats, setDashboardThroughput, setDashboardWorkload } = useContext(AppContext);
+  const { stats, throughput, workload, project_progress } = useLoaderData() || {};
+  const {
+    currentUser,
+    exportTasksCsv,
+    setDashboardStats,
+    setDashboardThroughput,
+    setDashboardWorkload,
+    setDashboardProjectProgress,
+    setProjects,
+  } = useContext(AppContext);
 
   useEffect(() => {
     if (stats) setDashboardStats(stats);
     if (throughput) setDashboardThroughput(throughput);
     if (workload) setDashboardWorkload(workload);
-  }, [stats, throughput, workload, setDashboardStats, setDashboardThroughput, setDashboardWorkload]);
+    if (project_progress) {
+      setDashboardProjectProgress(project_progress);
+      setProjects(prevProjects => {
+        if (!prevProjects || prevProjects.length === 0) {
+          return project_progress.map(p => ({
+            id: String(p.id),
+            name: p.name,
+            description: p.description || "",
+            status: p.status === 'in_progress' ? 'In Progress' : (p.status === 'completed' ? 'Completed' : (p.status === 'on_hold' ? 'On Hold' : 'Upcoming')),
+            due: p.deadline || "TBD",
+            startDate: p.start_date || "",
+            endDate: p.deadline || "",
+            manager: p.manager ? String(p.manager.id) : "",
+            priority: p.priority ? (p.priority.charAt(0).toUpperCase() + p.priority.slice(1)) : "Medium",
+            category: p.category || "Development",
+            percent: p.progress || 0,
+            members: p.users ? p.users.map(u => String(u.id)) : [],
+            updatedAt: p.updated_at,
+            sections: p.sections || [],
+          }));
+        }
+        return prevProjects.map(p => {
+          const updated = project_progress.find(item => String(item.id) === String(p.id));
+          if (updated) {
+            return {
+              ...p,
+              percent: updated.progress !== undefined ? updated.progress : p.percent,
+              due: updated.deadline || p.due,
+            };
+          }
+          return p;
+        });
+      });
+    }
+  }, [stats, throughput, workload, project_progress, setDashboardStats, setDashboardThroughput, setDashboardWorkload, setDashboardProjectProgress, setProjects]);
 
   const weekRangeLabel = (() => {
     const now = new Date();

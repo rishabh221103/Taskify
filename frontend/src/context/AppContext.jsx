@@ -33,6 +33,7 @@ export function AppProvider({ children }) {
   const [dashboardStats, setDashboardStats] = useState(null);
   const [dashboardThroughput, setDashboardThroughput] = useState([]);
   const [dashboardWorkload, setDashboardWorkload] = useState([]);
+  const [dashboardProjectProgress, setDashboardProjectProgress] = useState([]);
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
   // Local static states (retained for UI completeness)
@@ -158,6 +159,27 @@ export function AppProvider({ children }) {
       setDashboardStats(summary.stats);
       setDashboardThroughput(summary.throughput);
       setDashboardWorkload(summary.workload);
+      if (summary.project_progress) {
+        setDashboardProjectProgress(summary.project_progress);
+        setProjects(prevProjects => {
+          if (!prevProjects || prevProjects.length === 0) {
+            return summary.project_progress.map(mapApiProject);
+          }
+          return prevProjects.map(p => {
+            const updated = summary.project_progress.find(item => String(item.id) === String(p.id));
+            if (updated) {
+              const mapped = mapApiProject(updated);
+              return {
+                ...p,
+                percent: mapped.percent,
+                status: mapped.status || p.status,
+                due: mapped.due || p.due,
+              };
+            }
+            return p;
+          });
+        });
+      }
     } catch (e) {
       console.error("Failed to fetch dashboard data:", e);
     } finally {
@@ -202,6 +224,7 @@ export function AppProvider({ children }) {
       setDashboardStats(null);
       setDashboardThroughput([]);
       setDashboardWorkload([]);
+      setDashboardProjectProgress([]);
     }
   }, [currentUserId, currentUser]);
 
@@ -614,6 +637,70 @@ export function AppProvider({ children }) {
     }
   };
 
+  const reorderSections = async (projectId, orderedSectionIds) => {
+    const sProjectId = String(projectId);
+    let previousSections = [];
+
+    // Optimistically update projects state
+    setProjects(prev =>
+      prev.map(p => {
+        if (String(p.id) === sProjectId) {
+          previousSections = p.sections || [];
+          const sectionMap = new Map(previousSections.map(s => [String(s.id), s]));
+          const reordered = orderedSectionIds
+            .map((id, index) => {
+              const sec = sectionMap.get(String(id));
+              return sec ? { ...sec, order: index } : null;
+            })
+            .filter(Boolean);
+
+          const reorderedIds = new Set(orderedSectionIds.map(String));
+          const remaining = previousSections.filter(s => !reorderedIds.has(String(s.id)));
+
+          return {
+            ...p,
+            sections: [...reordered, ...remaining],
+          };
+        }
+        return p;
+      })
+    );
+
+    try {
+      const data = await apiRequest(`/api/projects/${sProjectId}/sections/reorder`, {
+        method: "PATCH",
+        body: JSON.stringify({ section_ids: orderedSectionIds.map(Number) }),
+      });
+
+      if (data?.sections) {
+        setProjects(prev =>
+          prev.map(p => {
+            if (String(p.id) === sProjectId) {
+              return {
+                ...p,
+                sections: data.sections.map(s => ({
+                  id: String(s.id),
+                  name: s.name,
+                  order: Number(s.order ?? 0),
+                })),
+              };
+            }
+            return p;
+          })
+        );
+      }
+      return { success: true };
+    } catch (e) {
+      console.error("reorderSections error:", e);
+      if (previousSections.length > 0) {
+        setProjects(prev =>
+          prev.map(p => (String(p.id) === sProjectId ? { ...p, sections: previousSections } : p))
+        );
+      }
+      return { success: false, error: e.message };
+    }
+  };
+
   // Member invitation & update
   const inviteMember = async (name, email, phone_number, title) => {
     try {
@@ -853,6 +940,7 @@ export function AppProvider({ children }) {
         logout,
         exportTasksCsv,
         createSection,
+        reorderSections,
         inviteMember,
         updateMember,
         memberById,
@@ -864,6 +952,8 @@ export function AppProvider({ children }) {
         setDashboardThroughput,
         dashboardWorkload,
         setDashboardWorkload,
+        dashboardProjectProgress,
+        setDashboardProjectProgress,
         dashboardLoading,
         fetchDashboardData,
         fetchTenantData,

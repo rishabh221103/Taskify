@@ -47,8 +47,8 @@ class TaskAssigned extends Notification implements ShouldQueue
 
         $isOwner = method_exists($notifiable, 'hasRole') && $notifiable->hasRole('owner');
         $link = $isOwner
-            ? 'http://localhost:5173/admin/projects/' . $this->task->project_id
-            : 'http://localhost:5173/member/tasks';
+            ? 'https://taskm.website-design-india.com/admin/projects/' . $this->task->project_id
+            : 'https://taskm.website-design-india.com/member/tasks';
 
         return (new MailMessage)
             ->subject('New Task Assignment: ' . $this->task->title)

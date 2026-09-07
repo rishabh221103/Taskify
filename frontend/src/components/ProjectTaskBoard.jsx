@@ -33,10 +33,16 @@ const BTN_GHOST = "px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text
 const BTN_DANGER = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-500 text-white cursor-pointer transition-colors shadow-sm flex items-center justify-center gap-1.5";
 
 export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, onDeleteSection, sections: propSections }) {
-  const { createTask, updateTask, setViewTaskId, members, updateProject, memberById, createSection, addAttachment } = useContext(AppContext);
+  const { createTask, updateTask, setViewTaskId, members, updateProject, memberById, createSection, reorderSections, addAttachment } = useContext(AppContext);
 
   // Drag and drop refs and state
+  const dragTypeRef = useRef(null); // 'task' | 'section'
   const draggingId = useRef(null);
+  const draggingSectionIndexRef = useRef(null);
+  const draggingSectionIdRef = useRef(null);
+
+  const [draggedSecIdx, setDraggedSecIdx] = useState(null);
+  const [dragOverSecIdx, setDragOverSecIdx] = useState(null);
   const [dragOverCol, setDragOverCol] = useState(null);
 
   // Inline add task states
@@ -82,33 +88,72 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
 
   const sections = propSections || (project.sections && project.sections.length > 0 ? project.sections : []);
 
-  // D&D Handlers
-  const onDragStart = (e, taskId) => {
+  // ── D&D Handlers ──────────────────────────────────────────────
+  const onTaskDragStart = (e, taskId) => {
+    e.stopPropagation();
+    dragTypeRef.current = "task";
     draggingId.current = taskId;
     e.dataTransfer.effectAllowed = "move";
   };
 
+  const onSectionDragStart = (e, index, secId) => {
+    dragTypeRef.current = "section";
+    draggingSectionIndexRef.current = index;
+    draggingSectionIdRef.current = secId;
+    setDraggedSecIdx(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(secId));
+  };
+
   const onDragEnd = () => {
+    dragTypeRef.current = null;
     draggingId.current = null;
+    draggingSectionIndexRef.current = null;
+    draggingSectionIdRef.current = null;
+    setDraggedSecIdx(null);
+    setDragOverSecIdx(null);
     setDragOverCol(null);
   };
 
-  const onColumnDragOver = (e, sectionName) => {
+  const onColumnDragOver = (e, sec, index) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    setDragOverCol(sectionName);
-  };
-
-  const onColumnDrop = (e, sectionObj) => {
-    e.preventDefault();
-    if (draggingId.current) {
-      updateTask(draggingId.current, { section: sectionObj.name, sectionId: sectionObj.id });
+    if (dragTypeRef.current === "section") {
+      if (dragOverSecIdx !== index) {
+        setDragOverSecIdx(index);
+      }
+    } else if (dragTypeRef.current === "task" || draggingId.current) {
+      if (dragOverCol !== sec.name) {
+        setDragOverCol(sec.name);
+      }
     }
-    setDragOverCol(null);
   };
 
-  const onColumnDragLeave = () => {
-    setDragOverCol(null);
+  const onColumnDrop = (e, sectionObj, targetIndex) => {
+    e.preventDefault();
+    if (dragTypeRef.current === "section") {
+      const fromIndex = draggingSectionIndexRef.current !== null ? draggingSectionIndexRef.current : draggedSecIdx;
+      const toIndex = targetIndex;
+      if (fromIndex !== null && toIndex !== null && fromIndex !== toIndex) {
+        const reordered = [...sections];
+        const [moved] = reordered.splice(fromIndex, 1);
+        reordered.splice(toIndex, 0, moved);
+        const orderedIds = reordered.map(s => s.id);
+        reorderSections(project.id, orderedIds);
+      }
+    } else if (dragTypeRef.current === "task" || draggingId.current) {
+      if (draggingId.current) {
+        updateTask(draggingId.current, { section: sectionObj.name, sectionId: sectionObj.id });
+      }
+    }
+    onDragEnd();
+  };
+
+  const onColumnDragLeave = (e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setDragOverCol(null);
+      setDragOverSecIdx(null);
+    }
   };
 
   // Close member select dropdown on outside click
@@ -213,23 +258,40 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
             </button>
           </div>
         ) : (
-          sections.map((sec) => {
+          sections.map((sec, index) => {
             const colTasks = projectTasks.filter((t) => String(t.sectionId) === String(sec.id) || (!t.sectionId && (t.section || "") === sec.name));
-            const isOver = dragOverCol === sec.name;
+            const isOverTask = dragOverCol === sec.name && dragTypeRef.current === "task";
+            const isDraggingThisSec = draggedSecIdx === index;
+            const isOverThisSec = dragOverSecIdx === index && draggedSecIdx !== null && draggedSecIdx !== index;
 
           return (
             <div
               key={sec.id}
-              className={`w-72 shrink-0 flex flex-col bg-[var(--bg-surface)]/20 border border-[var(--border-default)]/40 rounded-2xl p-4 h-full transition-colors duration-200 ${isOver ? "ring-2 ring-[var(--status-inprogress-text)]/40 bg-[var(--bg-surface)]/80" : ""}`}
-              onDragOver={(e) => onColumnDragOver(e, sec.name)}
-              onDrop={(e) => onColumnDrop(e, sec)}
+              className={`w-72 shrink-0 flex flex-col bg-[var(--bg-surface)]/20 border border-[var(--border-default)]/40 rounded-2xl p-4 h-full transition-all duration-200 ${
+                isDraggingThisSec
+                  ? "opacity-30 border-dashed border-[var(--status-inprogress-text)] scale-[0.98]"
+                  : isOverThisSec
+                  ? "ring-2 ring-[var(--status-inprogress-text)] bg-[var(--status-inprogress-text)]/10 scale-[1.02] shadow-lg shadow-[var(--status-inprogress-text)]/10"
+                  : isOverTask
+                  ? "ring-2 ring-[var(--status-inprogress-text)]/40 bg-[var(--bg-surface)]/80"
+                  : ""
+              }`}
+              onDragOver={(e) => onColumnDragOver(e, sec, index)}
+              onDrop={(e) => onColumnDrop(e, sec, index)}
               onDragLeave={onColumnDragLeave}
             >
-              {/* Column Header */}
-              <div className="group/col-header flex items-center justify-between mb-3.5 px-0.5 select-none shrink-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-[13px] font-bold text-white tracking-wide truncate max-w-[150px]">{sec.name}</span>
-                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[var(--border-default)]/40 text-[var(--text-muted)]">
+              {/* Column Header / Section Drag Handle */}
+              <div
+                draggable
+                onDragStart={(e) => onSectionDragStart(e, index, sec.id)}
+                onDragEnd={onDragEnd}
+                className="group/col-header flex items-center justify-between mb-3.5 px-1.5 py-1 -mx-1.5 -mt-1 rounded-xl hover:bg-[var(--bg-surface)]/60 cursor-grab active:cursor-grabbing select-none shrink-0 transition-colors"
+                title="Drag to reorder section"
+              >
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <GripVertical size={14} className="text-[var(--text-muted)] opacity-30 group-hover/col-header:opacity-100 hover:text-white transition-opacity shrink-0" />
+                  <span className="text-[13px] font-bold text-white tracking-wide truncate max-w-[140px]">{sec.name}</span>
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[var(--border-default)]/40 text-[var(--text-muted)] shrink-0">
                     {colTasks.length}
                   </span>
                 </div>
@@ -238,7 +300,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                     e.stopPropagation();
                     onDeleteSection && onDeleteSection(sec);
                   }}
-                  className="opacity-0 group-hover/col-header:opacity-100 text-red-500 hover:text-red-400 p-1 rounded-lg transition-opacity cursor-pointer flex items-center justify-center animate-fadeIn"
+                  className="opacity-0 group-hover/col-header:opacity-100 text-red-500 hover:text-red-400 p-1 rounded-lg hover:bg-red-500/10 transition-all cursor-pointer flex items-center justify-center"
                   title="Delete section"
                 >
                   <Trash2 size={12} />
@@ -257,7 +319,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                       id={`task-card-${t.id}`}
                       key={t.id}
                       draggable
-                      onDragStart={(e) => onDragStart(e, t.id)}
+                      onDragStart={(e) => onTaskDragStart(e, t.id)}
                       onDragEnd={onDragEnd}
                       onClick={() => setViewTaskId(t.id)}
                       className="group/card relative rounded-xl p-3 border border-[var(--border-default)] bg-[var(--bg-base)] cursor-pointer hover:border-[var(--status-inprogress-text)]/50 transition-all select-none flex flex-col gap-2.5 shrink-0"
