@@ -370,4 +370,48 @@ class NotificationTest extends TestCase
         Artisan::call('app:send-task-due-reminders');
         Notification::assertNothingSent();
     }
+
+    public function test_email_links_dynamically_use_frontend_url_from_configuration()
+    {
+        $customDomain = 'https://taskify.production.com';
+        config(['app.frontend_url' => $customDomain]);
+
+        // 1. MemberWelcome link
+        $welcome = new \App\Notifications\MemberWelcome('tempPass123');
+        $welcomeMail = $welcome->toMail($this->userB);
+        $this->assertEquals($customDomain . '/login', $welcomeMail->actionUrl);
+
+        // 2. ProjectAssigned link (member vs owner)
+        $projectAssigned = new \App\Notifications\ProjectAssigned($this->project);
+        $projectMailMember = $projectAssigned->toMail($this->userB);
+        $this->assertEquals($customDomain . '/member/projects/' . $this->project->id, $projectMailMember->actionUrl);
+
+        $projectMailOwner = $projectAssigned->toMail($this->userA);
+        $this->assertEquals($customDomain . '/admin/projects/' . $this->project->id, $projectMailOwner->actionUrl);
+
+        // 3. ProjectDueReminder link
+        $projectReminder = new \App\Notifications\ProjectDueReminder($this->project);
+        $projectReminderMail = $projectReminder->toMail($this->userB);
+        $this->assertEquals($customDomain . '/member/projects/' . $this->project->id, $projectReminderMail->actionUrl);
+
+        // 4. TaskAssigned link
+        $task = Task::create([
+            'organization_id' => $this->org->id,
+            'project_id' => $this->project->id,
+            'section_id' => $this->section->id,
+            'title' => 'Test Url Task',
+            'created_by' => $this->userA->id,
+        ]);
+        $taskAssigned = new \App\Notifications\TaskAssigned($task);
+        $taskMailMember = $taskAssigned->toMail($this->userB);
+        $this->assertEquals($customDomain . '/member/tasks', $taskMailMember->actionUrl);
+
+        $taskMailOwner = $taskAssigned->toMail($this->userA);
+        $this->assertEquals($customDomain . '/admin/projects/' . $this->project->id, $taskMailOwner->actionUrl);
+
+        // 5. TaskDueReminder link
+        $taskReminder = new \App\Notifications\TaskDueReminder($task);
+        $taskReminderMail = $taskReminder->toMail($this->userB);
+        $this->assertEquals($customDomain . '/member/tasks', $taskReminderMail->actionUrl);
+    }
 }

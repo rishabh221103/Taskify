@@ -35,14 +35,14 @@ export default function MemberProjectsPage() {
       {/* ─── Page Header ─── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className={`${display} text-2xl font-bold text-white tracking-tight`}>My Projects</h1>
+          <h1 className={`${display} text-2xl font-bold text-[var(--text-primary)] tracking-tight`}>My Projects</h1>
           <p className="text-xs text-[var(--text-muted)] mt-1">
             Projects you are assigned to as a team member or collaborator ({memberProjects.length} total)
           </p>
         </div>
 
         {/* Search */}
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)]/60 text-xs text-white">
+        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)]/60 text-xs text-[var(--text-primary)]">
           <Search size={14} className="text-[var(--text-disabled)]" />
           <input
             type="text"
@@ -58,7 +58,7 @@ export default function MemberProjectsPage() {
       {filteredProjects.length === 0 ? (
         <div className="rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-default)]/60 p-12 text-center flex flex-col items-center justify-center">
           <FolderGit2 size={36} className="text-[var(--text-disabled)] mb-3" />
-          <p className="text-sm font-semibold text-white">No projects found</p>
+          <p className="text-sm font-semibold text-[var(--text-primary)]">No projects found</p>
           <p className="text-xs text-[var(--text-muted)] mt-1">
             You are not assigned to any projects matching your search.
           </p>
@@ -89,7 +89,7 @@ export default function MemberProjectsPage() {
                     </span>
                   </div>
 
-                  <h3 className={`${display} text-base font-bold text-white mb-1.5`}>{proj.name}</h3>
+                  <h3 className={`${display} text-base font-bold text-[var(--text-primary)] mb-1.5`}>{proj.name}</h3>
                   <p className="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed">
                     {proj.description || "No project description provided."}
                   </p>
@@ -100,7 +100,7 @@ export default function MemberProjectsPage() {
                   <div>
                     <div className="flex items-center justify-between text-xs mb-1.5">
                       <span className="text-[var(--text-muted)] font-medium">Progress</span>
-                      <span className="font-bold text-white">{proj.percent || 0}%</span>
+                      <span className="font-bold text-[var(--text-primary)]">{proj.percent || 0}%</span>
                     </div>
                     <div className="w-full bg-[var(--bg-base)] h-2 rounded-full overflow-hidden">
                       <div

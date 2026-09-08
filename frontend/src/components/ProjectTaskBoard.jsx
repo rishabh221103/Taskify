@@ -374,7 +374,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                       <div className={`flex items-start gap-2 ${t.thumbnail ? "" : "pr-20"}`}>
                         <button
                           onClick={(e) => handleToggleComplete(e, t)}
-                          className="mt-0.5 text-[var(--text-muted)] hover:text-white cursor-pointer shrink-0 focus:outline-none"
+                          className="mt-0.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer shrink-0 focus:outline-none"
                         >
                           {isDone ? (
                             <CheckCircle2 size={15} className="text-[var(--status-completed-text)] fill-[var(--status-completed-text)]/15" />
@@ -420,7 +420,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                                 const formatted = dateVal ? new Date(dateVal).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "TBD";
                                 updateTask(t.id, { due: formatted, due_date: dateVal });
                               }}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer [color-scheme:dark]"
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
                             />
                           </div>
 
@@ -469,7 +469,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                         }
                       }}
                       placeholder="Type a task name..."
-                      className="w-full bg-[var(--bg-raised)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[var(--status-inprogress-text)]"
+                      className="w-full bg-[var(--bg-raised)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
                       autoFocus
                     />
                     <div className="flex gap-2 justify-end">
@@ -517,7 +517,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                 value={newSectionBoardName}
                 onChange={(e) => setNewSectionBoardName(e.target.value)}
                 placeholder="Group name..."
-                className="w-full bg-[var(--bg-raised)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[var(--status-inprogress-text)]"
+                className="w-full bg-[var(--bg-raised)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleAddSectionSubmit();
@@ -527,7 +527,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
               <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => setIsAddingSectionBoard(false)}
-                  className="px-2.5 py-1 text-[11px] text-[var(--text-muted)] hover:text-white cursor-pointer"
+                  className="px-2.5 py-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -566,10 +566,10 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
           >
             {/* Popover Header */}
             <div className="flex items-center justify-between border-b border-[var(--border-default)]/20 pb-2.5">
-              <h2 className="text-xs font-bold text-white uppercase tracking-wider">Edit Task</h2>
+              <h2 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Edit Task</h2>
               <button 
                 onClick={() => setEditingTask(null)}
-                className="text-[var(--text-muted)] hover:text-white cursor-pointer text-lg leading-none"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer text-lg leading-none"
               >
                 ×
               </button>
@@ -582,7 +582,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                 type="text"
                 value={editingTitle}
                 onChange={(e) => setEditingTitle(e.target.value)}
-                className="w-full bg-[var(--bg-base)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[var(--status-inprogress-text)]"
+                className="w-full bg-[var(--bg-base)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
                 placeholder="Task name *"
               />
             </div>
@@ -594,7 +594,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                 type="date"
                 value={editingDue}
                 onChange={(e) => setEditingDue(e.target.value)}
-                className="w-full bg-[var(--bg-base)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:dark]"
+                className="w-full bg-[var(--bg-base)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
               />
             </div>
 
@@ -605,7 +605,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
               <div className="relative">
                 <div 
                   onClick={() => setMemberDropdownOpen(!memberDropdownOpen)}
-                  className="w-full bg-[var(--bg-base)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-white cursor-pointer flex items-center justify-between"
+                  className="w-full bg-[var(--bg-base)] border border-[var(--border-default)] px-3 py-2 rounded-xl text-xs text-[var(--text-primary)] cursor-pointer flex items-center justify-between"
                 >
                   <span className={editingMembers.length === 0 ? "text-[var(--text-disabled)]" : ""}>
                     {editingMembers.length === 0 
@@ -622,7 +622,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
                       placeholder="Search members..."
                       value={memberSearchQuery}
                       onChange={(e) => setMemberSearchQuery(e.target.value)}
-                      className="w-full bg-[var(--bg-base)] border border-[var(--border-default)]/70 px-2.5 py-1.5 rounded-lg text-xs text-white placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
+                      className="w-full bg-[var(--bg-base)] border border-[var(--border-default)]/70 px-2.5 py-1.5 rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
                     />
                     <div className="flex flex-col gap-1">
                       {members
@@ -681,7 +681,7 @@ export default function ProjectTaskBoard({ project, projectTasks, onDeleteTask, 
               <button
                 type="button"
                 onClick={() => setEditingTask(null)}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 Cancel
               </button>

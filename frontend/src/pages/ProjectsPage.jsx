@@ -283,7 +283,7 @@ export default function ProjectsPage() {
         <div className="relative filter-trigger">
           <button 
             onClick={() => toggleFilterDropdown("owner")}
-            className="flex items-center gap-1 px-3 py-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-full text-xs text-gray-300 hover:bg-[var(--bg-raised)] transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-3 py-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-full text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-raised)] transition-colors cursor-pointer"
           >
             <span>{getOwnerName()}</span>
             <ChevronDown size={12} className="text-gray-400" />
@@ -293,7 +293,7 @@ export default function ProjectsPage() {
             <div className="filter-content absolute left-0 top-full mt-1.5 z-35 w-44 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl shadow-2xl py-1 max-h-48 overflow-y-auto custom-scroll">
               <button
                 onClick={() => { setOwnerFilter("All"); closeAllFilterDropdowns(); }}
-                className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${ownerFilter === "All" ? "text-[var(--status-inprogress-text)] font-bold" : "text-white"}`}
+                className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${ownerFilter === "All" ? "text-[var(--status-inprogress-text)] font-bold" : "text-[var(--text-primary)]"}`}
               >
                 All Owners
               </button>
@@ -301,7 +301,7 @@ export default function ProjectsPage() {
                 <button
                   key={m.id}
                   onClick={() => { setOwnerFilter(m.id); closeAllFilterDropdowns(); }}
-                  className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${ownerFilter === m.id ? "text-[var(--status-inprogress-text)] font-bold" : "text-white"} flex items-center gap-2`}
+                  className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${ownerFilter === m.id ? "text-[var(--status-inprogress-text)] font-bold" : "text-[var(--text-primary)]"} flex items-center gap-2`}
                 >
                   <div className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center text-[7px]" style={{ background: m.color }}>
                     {m.avatar ? <img src={m.avatar} alt="" className="w-full h-full object-cover" /> : m.initials}
@@ -317,7 +317,7 @@ export default function ProjectsPage() {
         <div className="relative filter-trigger">
           <button 
             onClick={() => toggleFilterDropdown("member")}
-            className="flex items-center gap-1 px-3 py-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-full text-xs text-gray-300 hover:bg-[var(--bg-raised)] transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-3 py-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-full text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-raised)] transition-colors cursor-pointer"
           >
             <span>{getMemberName()}</span>
             <ChevronDown size={12} className="text-gray-400" />
@@ -327,7 +327,7 @@ export default function ProjectsPage() {
             <div className="filter-content absolute left-0 top-full mt-1.5 z-35 w-44 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl shadow-2xl py-1 max-h-48 overflow-y-auto custom-scroll">
               <button
                 onClick={() => { setMemberFilter("All"); closeAllFilterDropdowns(); }}
-                className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${memberFilter === "All" ? "text-[var(--status-inprogress-text)] font-bold" : "text-white"}`}
+                className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${memberFilter === "All" ? "text-[var(--status-inprogress-text)] font-bold" : "text-[var(--text-primary)]"}`}
               >
                 All Members
               </button>
@@ -335,7 +335,7 @@ export default function ProjectsPage() {
                 <button
                   key={m.id}
                   onClick={() => { setMemberFilter(m.id); closeAllFilterDropdowns(); }}
-                  className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${memberFilter === m.id ? "text-[var(--status-inprogress-text)] font-bold" : "text-white"} flex items-center gap-2`}
+                  className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${memberFilter === m.id ? "text-[var(--status-inprogress-text)] font-bold" : "text-[var(--text-primary)]"} flex items-center gap-2`}
                 >
                   <div className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center text-[7px]" style={{ background: m.color }}>
                     {m.avatar ? <img src={m.avatar} alt="" className="w-full h-full object-cover" /> : m.initials}
@@ -351,7 +351,7 @@ export default function ProjectsPage() {
         <div className="relative filter-trigger">
           <button 
             onClick={() => toggleFilterDropdown("status")}
-            className="flex items-center gap-1 px-3 py-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-full text-xs text-gray-300 hover:bg-[var(--bg-raised)] transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-3 py-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-full text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-raised)] transition-colors cursor-pointer"
           >
             <span>{getStatusName()}</span>
             <ChevronDown size={12} className="text-gray-400" />
@@ -361,7 +361,7 @@ export default function ProjectsPage() {
             <div className="filter-content absolute left-0 top-full mt-1.5 z-35 w-40 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl shadow-2xl py-1">
               <button
                 onClick={() => { setStatusFilter("All"); closeAllFilterDropdowns(); }}
-                className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${statusFilter === "All" ? "text-[var(--status-inprogress-text)] font-bold" : "text-white"}`}
+                className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${statusFilter === "All" ? "text-[var(--status-inprogress-text)] font-bold" : "text-[var(--text-primary)]"}`}
               >
                 All Statuses
               </button>
@@ -369,7 +369,7 @@ export default function ProjectsPage() {
                 <button
                   key={status}
                   onClick={() => { setStatusFilter(status); closeAllFilterDropdowns(); }}
-                  className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${statusFilter === status ? "text-[var(--status-inprogress-text)] font-bold" : "text-white"}`}
+                  className={`w-full text-left px-3.5 py-1.5 text-xs hover:bg-[var(--bg-raised)] cursor-pointer ${statusFilter === status ? "text-[var(--status-inprogress-text)] font-bold" : "text-[var(--text-primary)]"}`}
                 >
                   {status}
                 </button>
@@ -390,7 +390,7 @@ export default function ProjectsPage() {
           <div className="col-span-2 text-center">Portfolios</div>
           <div 
             onClick={() => setSortOrder(prev => prev === "desc" ? "asc" : "desc")}
-            className="col-span-2 flex items-center justify-end gap-1 cursor-pointer hover:text-white"
+            className="col-span-2 flex items-center justify-end gap-1 cursor-pointer hover:text-[var(--text-primary)]"
           >
             <span>Last modified</span>
             <ArrowUpDown size={11} className="text-gray-500" />
@@ -440,7 +440,7 @@ export default function ProjectsPage() {
                           {m.avatar ? (
                             <img src={m.avatar} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            <span className="text-[7px] font-bold text-white uppercase">{m.initials}</span>
+                            <span className="text-[7px] font-bold text-gray-900 dark:text-white uppercase">{m.initials}</span>
                           )}
                         </div>
                       );
@@ -487,7 +487,7 @@ export default function ProjectsPage() {
         <div className={`${card} p-6 relative mt-4 select-none animate-fadeIn`}>
           <button 
             onClick={() => setShowTemplates(false)}
-            className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+            className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
           >
             <X size={16} />
           </button>
@@ -504,7 +504,7 @@ export default function ProjectsPage() {
                 <SlidersHorizontal size={15} />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white group-hover/t:text-[var(--status-inprogress-text)] transition-colors">
+                <h4 className="text-xs font-bold text-[var(--text-primary)] group-hover/t:text-[var(--status-inprogress-text)] transition-colors">
                   Cross-functional project plan
                 </h4>
                 <p className="text-[10.5px] text-[var(--text-muted)] mt-1.5 leading-relaxed">
@@ -519,7 +519,7 @@ export default function ProjectsPage() {
                 <Users size={15} />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white group-hover/t:text-[var(--status-inprogress-text)] transition-colors">
+                <h4 className="text-xs font-bold text-[var(--text-primary)] group-hover/t:text-[var(--status-inprogress-text)] transition-colors">
                   1:1 Meeting agenda
                 </h4>
                 <p className="text-[10.5px] text-[var(--text-muted)] mt-1.5 leading-relaxed">
@@ -534,7 +534,7 @@ export default function ProjectsPage() {
                 <Clock size={15} />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white group-hover/t:text-[var(--status-inprogress-text)] transition-colors">
+                <h4 className="text-xs font-bold text-[var(--text-primary)] group-hover/t:text-[var(--status-inprogress-text)] transition-colors">
                   Meeting agenda
                 </h4>
                 <p className="text-[10.5px] text-[var(--text-muted)] mt-1.5 leading-relaxed">
@@ -545,7 +545,7 @@ export default function ProjectsPage() {
 
           </div>
 
-          <button className="mt-6 mx-auto bg-transparent border border-[var(--border-default)] hover:bg-[var(--bg-elevated)] text-xs font-semibold text-gray-300 px-4 py-2 rounded-xl cursor-pointer transition-colors w-fit flex items-center justify-center">
+          <button className="mt-6 mx-auto bg-transparent border border-[var(--border-default)] hover:bg-[var(--bg-elevated)] text-xs font-semibold text-[var(--text-secondary)] px-4 py-2 rounded-xl cursor-pointer transition-colors w-fit flex items-center justify-center">
             View the template gallery
           </button>
 
@@ -557,10 +557,10 @@ export default function ProjectsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
           <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-2xl w-full max-w-lg shadow-2xl p-6 relative flex flex-col gap-4 max-h-[88vh] overflow-y-auto custom-scroll">
             <div className="flex items-center justify-between">
-              <h3 className={`${display} font-bold text-lg text-white`}>Create New Project</h3>
+              <h3 className={`${display} font-bold text-lg text-[var(--text-primary)]`}>Create New Project</h3>
               <button 
                 onClick={() => setNewProjectOpen(false)}
-                className="text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -603,7 +603,7 @@ export default function ProjectsPage() {
                       type="date"
                       value={newProjForm.startDate}
                       onChange={(e) => setNewProjForm(prev => ({ ...prev, startDate: e.target.value }))}
-                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-2 rounded-xl text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:dark]"
+                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-2 rounded-xl text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
                     />
                   </div>
                   <div>
@@ -612,7 +612,7 @@ export default function ProjectsPage() {
                       type="date"
                       value={newProjForm.endDate}
                       onChange={(e) => setNewProjForm(prev => ({ ...prev, endDate: e.target.value }))}
-                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-2 rounded-xl text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:dark]"
+                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-2 rounded-xl text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
                     />
                   </div>
                   <div>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import {
@@ -37,34 +37,41 @@ const planningItems = [
 
 export default function Sidebar() {
   const location = useLocation();
+  const sidebarRef = useRef(null);
 
   const {
     currentUser,
-    mobileSidebarOpen,
-    setMobileSidebarOpen,
+    sidebarOpen,
+    setSidebarOpen,
     logout,
   } = useContext(AppContext);
 
-  useEffect(() => {
-    const handleOutsideClick = () => { };
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
+  // Sidebar stays open unless explicitly closed by clicking the toggle button
+  // (Outside click auto-close removed per persistent sidebar requirement)
 
   if (!currentUser) return null;
 
+  const handleNavClick = () => {
+    // Sidebar persists and stays open across navigation
+  };
+
   return (
     <>
-      {/* Backdrop overlay for mobile */}
-      {mobileSidebarOpen && (
-        <div
-          onClick={() => setMobileSidebarOpen(false)}
-          className="fixed inset-0 z-40 bg-black/60 md:hidden transition-opacity duration-300"
-        />
-      )}
+      {/* Backdrop overlay for smaller/compact viewports */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/60 lg:hidden transition-opacity duration-300 ease-in-out pointer-events-none ${
+          sidebarOpen ? "opacity-100" : "opacity-0"
+        }`}
+      />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 shrink-0 border-r border-[var(--border-default)] bg-[var(--bg-base)] px-5 py-6 gap-8 overflow-y-auto transition-transform duration-300 ease-in-out md:sticky md:top-0 md:h-screen md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        ref={sidebarRef}
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 shrink-0 border-r border-[var(--border-default)] bg-[var(--bg-base)] px-5 py-6 gap-8 overflow-y-auto transition-[transform,margin,opacity] duration-300 ease-in-out
+          lg:sticky lg:top-0 lg:h-screen
+          ${
+            sidebarOpen
+              ? "translate-x-0 lg:ml-0 lg:opacity-100 lg:pointer-events-auto"
+              : "-translate-x-full lg:-ml-64 lg:opacity-0 lg:pointer-events-none"
           }`}
       >
         <div className="flex items-center justify-between px-2">
@@ -74,10 +81,12 @@ export default function Sidebar() {
             </div>
             <span className={`${display} text-lg font-semibold`}>Taskify</span>
           </div>
-          {/* Close button for mobile */}
+          {/* Close button for compact viewports */}
           <button
-            onClick={() => setMobileSidebarOpen(false)}
-            className="md:hidden p-1 hover:bg-[var(--bg-raised)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+            type="button"
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-1 hover:bg-[var(--bg-raised)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
+            title="Close navigation"
           >
             <X size={18} />
           </button>
@@ -91,9 +100,10 @@ export default function Sidebar() {
               <Link
                 key={item.label}
                 to={item.path}
+                onClick={handleNavClick}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-left transition-all border-l-2 ${active
-                  ? "text-white bg-[var(--bg-raised)] border-[var(--status-inprogress-text)] shadow-sm font-semibold"
-                  : `border-transparent ${muted} hover:text-white hover:bg-[var(--bg-raised)]/50`
+                  ? "text-gray-900 dark:text-gray-100 bg-[var(--bg-raised)] border-[var(--status-inprogress-text)] shadow-sm font-semibold"
+                  : `border-transparent ${muted} hover:text-gray-900 dark:hover:text-gray-100 hover:bg-[var(--bg-raised)]/50`
                   }`}
               >
                 <item.icon size={18} className="shrink-0" />
@@ -109,9 +119,10 @@ export default function Sidebar() {
               <Link
                 key={item.label}
                 to={item.path}
+                onClick={handleNavClick}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-left transition-all border-l-2 ${active
-                  ? "text-white bg-[var(--bg-raised)] border-[var(--status-inprogress-text)] shadow-sm font-semibold"
-                  : `border-transparent ${muted} hover:text-white hover:bg-[var(--bg-raised)]/50`
+                  ? "text-gray-900 dark:text-gray-100 bg-[var(--bg-raised)] border-[var(--status-inprogress-text)] shadow-sm font-semibold"
+                  : `border-transparent ${muted} hover:text-gray-900 dark:hover:text-gray-100 hover:bg-[var(--bg-raised)]/50`
                   }`}
               >
                 <item.icon size={18} className="shrink-0" />
@@ -120,7 +131,6 @@ export default function Sidebar() {
             );
           })}
         </nav>
-
 
         {/* Simple profile card — avatar, name, role, logout */}
         <div className={`${card} flex items-center gap-3 p-3 pr-4 mt-auto hover:border-[#3a4356] transition-colors`}>
@@ -154,3 +164,4 @@ export default function Sidebar() {
     </>
   );
 }
+

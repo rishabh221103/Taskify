@@ -46,7 +46,7 @@ const muted = "text-[var(--text-muted)]";
 
 const BTN_PRIMARY = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--status-inprogress-text)] hover:bg-[#2563eb] text-white cursor-pointer transition-colors shadow-sm disabled:opacity-40 flex items-center justify-center gap-1.5";
 const BTN_SECONDARY = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--bg-raised)] border border-[var(--border-default)] hover:bg-[var(--border-default)] text-[var(--text-primary)] cursor-pointer transition-colors shadow-sm flex items-center justify-center gap-1.5";
-const BTN_GHOST = "px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-raised)] cursor-pointer transition-all flex items-center justify-center gap-1.5";
+const BTN_GHOST = "px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-raised)] cursor-pointer transition-all flex items-center justify-center gap-1.5";
 const BTN_DANGER = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-500 text-white cursor-pointer transition-colors shadow-sm flex items-center justify-center gap-1.5";
 
 const DEFAULT_DASHBOARD_CARDS = [
@@ -982,7 +982,7 @@ export default function ProjectViewPage() {
       {/* ─── Sticky Header Section ─── */}
       <div className="flex flex-col gap-2.5 border-b border-[var(--border-default)]/30 pb-5 select-none w-full">
         {/* Back Link Breadcrumb */}
-        <Link to="/admin/projects" className="flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-white transition-colors w-fit">
+        <Link to="/admin/projects" className="flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors w-fit">
           <ArrowLeft size={12} /> Back to Projects
         </Link>
 
@@ -1083,7 +1083,7 @@ export default function ProjectViewPage() {
           <div className="relative">
             <button
               onClick={() => toggleDropdown("statusSelect")}
-              className={`dropdown-trigger flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-bold cursor-pointer transition-colors ${STATUS_THEME[project.status]?.bg || "bg-slate-800 text-gray-300 border-transparent"
+              className={`dropdown-trigger flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-bold cursor-pointer transition-colors ${STATUS_THEME[project.status]?.bg || "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-gray-300 border-transparent"
                 }`}
             >
               <span
@@ -1139,7 +1139,7 @@ export default function ProjectViewPage() {
                     {m.avatar ? (
                       <img src={m.avatar} alt={m.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-[8px] font-bold text-white uppercase">{m.initials}</span>
+                      <span className="text-[8px] font-bold text-gray-900 dark:text-white uppercase">{m.initials}</span>
                     )}
                   </div>
                 );
@@ -1334,7 +1334,7 @@ export default function ProjectViewPage() {
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => setIsEditingDesc(false)}
-                        className="px-3 py-1.5 text-xs text-[var(--text-muted)] hover:text-white cursor-pointer"
+                        className="px-3 py-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                       >
                         Cancel
                       </button>
@@ -1431,7 +1431,7 @@ export default function ProjectViewPage() {
                       type="date"
                       value={project.startDate || ""}
                       onChange={(e) => updateProject(project.id, { startDate: e.target.value })}
-                      className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2 py-1 rounded-lg text-[10px] text-[var(--text-primary)] outline-none cursor-pointer [color-scheme:dark]"
+                      className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2 py-1 rounded-lg text-[10px] text-[var(--text-primary)] outline-none cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
@@ -1446,7 +1446,7 @@ export default function ProjectViewPage() {
                           : "TBD";
                         updateProject(project.id, { endDate: newEndDate, due: dueLabel });
                       }}
-                      className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2 py-1 rounded-lg text-[10px] text-[var(--text-primary)] outline-none cursor-pointer [color-scheme:dark]"
+                      className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2 py-1 rounded-lg text-[10px] text-[var(--text-primary)] outline-none cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
                     />
                   </div>
                 </div>
@@ -1483,10 +1483,10 @@ export default function ProjectViewPage() {
                       <div key={file.id} className="bg-[var(--bg-surface)] border border-[var(--border-default)]/50 rounded-lg p-2 flex items-center justify-between gap-2">
                         <div className="min-w-0 flex items-center gap-2">
                           <FileText size={14} className="text-red-400 shrink-0" />
-                          <span className="text-[10px] text-gray-300 truncate">{file.name}</span>
+                          <span className="text-[10px] text-[var(--text-secondary)] truncate">{file.name}</span>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <a href={file.url} target="_blank" rel="noreferrer" className="text-[var(--text-muted)] hover:text-white">
+                          <a href={file.url} target="_blank" rel="noreferrer" className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                             <Download size={11} />
                           </a>
                           <button onClick={() => handleDeleteFile(file.id)} className="text-[var(--text-muted)] hover:text-red-500 cursor-pointer">
@@ -1530,7 +1530,7 @@ export default function ProjectViewPage() {
                 <div className="relative">
                   <button
                     onClick={() => toggleDropdown("listFilter")}
-                    className="dropdown-trigger flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-white font-medium cursor-pointer"
+                    className="dropdown-trigger flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium cursor-pointer"
                   >
                     <ListFilter size={14} /> Filter
                   </button>
@@ -1541,7 +1541,7 @@ export default function ProjectViewPage() {
                         <select
                           value={listFilters.status}
                           onChange={(e) => setListFilters(prev => ({ ...prev, status: e.target.value }))}
-                          className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-2 py-1 mt-1 rounded text-xs text-white"
+                          className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-2 py-1 mt-1 rounded text-xs text-[var(--text-primary)]"
                         >
                           <option value="All">All Statuses</option>
                           {COLUMNS.map(col => <option key={col} value={col}>{col}</option>)}
@@ -1552,7 +1552,7 @@ export default function ProjectViewPage() {
                         <select
                           value={listFilters.priority}
                           onChange={(e) => setListFilters(prev => ({ ...prev, priority: e.target.value }))}
-                          className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-2 py-1 mt-1 rounded text-xs text-white"
+                          className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-2 py-1 mt-1 rounded text-xs text-[var(--text-primary)]"
                         >
                           <option value="All">All Priorities</option>
                           <option value="High">High</option>
@@ -1568,7 +1568,7 @@ export default function ProjectViewPage() {
                 <div className="relative">
                   <button
                     onClick={() => toggleDropdown("listSort")}
-                    className="dropdown-trigger flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-white font-medium cursor-pointer"
+                    className="dropdown-trigger flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium cursor-pointer"
                   >
                     <ArrowUpDown size={14} /> Sort
                   </button>
@@ -1588,7 +1588,7 @@ export default function ProjectViewPage() {
                             }));
                             closeAllDropdowns();
                           }}
-                          className="w-full text-left px-3.5 py-1.5 text-xs text-white hover:bg-[var(--bg-raised)] cursor-pointer"
+                          className="w-full text-left px-3.5 py-1.5 text-xs text-[var(--text-primary)] hover:bg-[var(--bg-raised)] cursor-pointer"
                         >
                           {opt.label} {listSort.field === opt.field ? (listSort.order === "asc" ? "↑" : "↓") : ""}
                         </button>
@@ -1601,7 +1601,7 @@ export default function ProjectViewPage() {
                 <div className="relative">
                   <button
                     onClick={() => toggleDropdown("listGroup")}
-                    className="dropdown-trigger flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-white font-medium cursor-pointer"
+                    className="dropdown-trigger flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium cursor-pointer"
                   >
                     <Folder size={14} /> Group
                   </button>
@@ -1609,19 +1609,19 @@ export default function ProjectViewPage() {
                     <div className="dropdown-content absolute right-0 top-full mt-1.5 z-40 w-36 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl shadow-2xl py-1">
                       <button
                         onClick={() => { setListGroupBy("section"); closeAllDropdowns(); }}
-                        className={`w-full text-left px-3.5 py-1.5 text-xs cursor-pointer ${listGroupBy === "section" ? "text-[var(--status-inprogress-text)]" : "text-white"} hover:bg-[var(--bg-raised)]`}
+                        className={`w-full text-left px-3.5 py-1.5 text-xs cursor-pointer ${listGroupBy === "section" ? "text-[var(--status-inprogress-text)]" : "text-[var(--text-primary)]"} hover:bg-[var(--bg-raised)]`}
                       >
                         By Section
                       </button>
                       <button
                         onClick={() => { setListGroupBy("status"); closeAllDropdowns(); }}
-                        className={`w-full text-left px-3.5 py-1.5 text-xs cursor-pointer ${listGroupBy === "status" ? "text-[var(--status-inprogress-text)]" : "text-white"} hover:bg-[var(--bg-raised)]`}
+                        className={`w-full text-left px-3.5 py-1.5 text-xs cursor-pointer ${listGroupBy === "status" ? "text-[var(--status-inprogress-text)]" : "text-[var(--text-primary)]"} hover:bg-[var(--bg-raised)]`}
                       >
                         By Status
                       </button>
                       <button
                         onClick={() => { setListGroupBy("assignee"); closeAllDropdowns(); }}
-                        className={`w-full text-left px-3.5 py-1.5 text-xs cursor-pointer ${listGroupBy === "assignee" ? "text-[var(--status-inprogress-text)]" : "text-white"} hover:bg-[var(--bg-raised)]`}
+                        className={`w-full text-left px-3.5 py-1.5 text-xs cursor-pointer ${listGroupBy === "assignee" ? "text-[var(--status-inprogress-text)]" : "text-[var(--text-primary)]"} hover:bg-[var(--bg-raised)]`}
                       >
                         By Assignee
                       </button>
@@ -1633,7 +1633,7 @@ export default function ProjectViewPage() {
                 <div className="relative">
                   <button
                     onClick={() => toggleDropdown("customizeCols")}
-                    className="dropdown-trigger flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-white font-medium cursor-pointer"
+                    className="dropdown-trigger flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium cursor-pointer"
                   >
                     <Settings2 size={14} /> Options
                   </button>
@@ -1692,7 +1692,7 @@ export default function ProjectViewPage() {
                     <button
                       type="button"
                       onClick={() => setAddColumnOpen(!addColumnOpen)}
-                      className="p-1 rounded bg-[var(--bg-raised)] hover:bg-[var(--border-default)] text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                      className="p-1 rounded bg-[var(--bg-raised)] hover:bg-[var(--border-default)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer flex items-center justify-center"
                       title="Add Custom Column"
                     >
                       <Plus size={12} />
@@ -1808,7 +1808,7 @@ export default function ProjectViewPage() {
                                   <div className="flex items-center gap-2.5 min-w-0">
                                     <button
                                       onClick={() => handleToggleTaskDone(t)}
-                                      className="text-gray-500 hover:text-white cursor-pointer shrink-0 focus:outline-none"
+                                      className="text-gray-500 hover:text-[var(--text-primary)] cursor-pointer shrink-0 focus:outline-none"
                                     >
                                       {done ? (
                                         <CheckCircle2 size={16} className="text-[var(--status-completed-text)] fill-[var(--status-completed-text)]/15" />
@@ -1854,7 +1854,7 @@ export default function ProjectViewPage() {
                                               const val = e.target.value;
                                               setListAssigneeSearch(prev => ({ ...prev, [t.id]: val }));
                                             }}
-                                            className="w-full bg-[var(--bg-base)] border border-[var(--border-default)]/70 px-2.5 py-1.5 rounded-lg text-xs text-white placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
+                                            className="w-full bg-[var(--bg-base)] border border-[var(--border-default)]/70 px-2.5 py-1.5 rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
                                           />
 
                                           <div className="flex flex-col gap-1">
@@ -1928,7 +1928,7 @@ export default function ProjectViewPage() {
                                             );
                                           } else {
                                             return (
-                                              <div className="w-5 h-5 rounded-full border border-dashed border-[var(--border-default)] flex items-center justify-center text-[var(--text-muted)] hover:border-[var(--status-inprogress-text)] hover:text-white transition-colors" title="Click to assign">
+                                              <div className="w-5 h-5 rounded-full border border-dashed border-[var(--border-default)] flex items-center justify-center text-[var(--text-muted)] hover:border-[var(--status-inprogress-text)] hover:text-[var(--text-primary)] transition-colors" title="Click to assign">
                                                 <Users size={10} />
                                               </div>
                                             );
@@ -1969,7 +1969,7 @@ export default function ProjectViewPage() {
                                             }
                                           }}
                                           autoFocus
-                                          className="due-cell-editor bg-[var(--bg-surface)] border border-[var(--border-default)] px-1.5 py-0.5 rounded text-[10px] text-white [color-scheme:dark] outline-none"
+                                          className="due-cell-editor bg-[var(--bg-surface)] border border-[var(--border-default)] px-1.5 py-0.5 rounded text-[10px] text-[var(--text-primary)] [color-scheme:light] dark:[color-scheme:dark] outline-none"
                                         />
                                       ) : (
                                         <span
@@ -1977,7 +1977,7 @@ export default function ProjectViewPage() {
                                             setEditingTaskDue(t.id);
                                             setTempDueDate(t.dueDate || "");
                                           }}
-                                          className={`text-[10px] font-bold cursor-pointer hover:text-white select-none ${t.due === "Today" ? "text-emerald-500 font-extrabold" : "text-[var(--text-secondary)]"
+                                          className={`text-[10px] font-bold cursor-pointer hover:text-[var(--text-primary)] select-none ${t.due === "Today" ? "text-emerald-500 font-extrabold" : "text-[var(--text-secondary)]"
                                             }`}
                                         >
                                           {t.due || "TBD"}
@@ -1999,7 +1999,7 @@ export default function ProjectViewPage() {
                                             setEditingTaskPriority(null);
                                           }}
                                           autoFocus
-                                          className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-1 py-0.5 rounded text-[10px] text-white"
+                                          className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-1 py-0.5 rounded text-[10px] text-[var(--text-primary)]"
                                         >
                                           <option value="High">High</option>
                                           <option value="Medium">Medium</option>
@@ -2069,7 +2069,7 @@ export default function ProjectViewPage() {
                                                   }
                                                 }}
                                                 autoFocus
-                                                className="custom-cell-editor bg-[var(--bg-surface)] border border-[var(--border-default)] px-1.5 py-0.5 rounded text-[10px] text-white w-full max-w-[85px] outline-none"
+                                                className="custom-cell-editor bg-[var(--bg-surface)] border border-[var(--border-default)] px-1.5 py-0.5 rounded text-[10px] text-[var(--text-primary)] w-full max-w-[85px] outline-none"
                                               />
                                             )}
                                           </>
@@ -2096,7 +2096,7 @@ export default function ProjectViewPage() {
                                                   );
                                                 } else {
                                                   return (
-                                                    <div className="w-5 h-5 rounded-full border border-dashed border-[var(--border-default)] flex items-center justify-center text-[var(--text-muted)] hover:border-[var(--status-inprogress-text)] hover:text-white transition-colors">
+                                                    <div className="w-5 h-5 rounded-full border border-dashed border-[var(--border-default)] flex items-center justify-center text-[var(--text-muted)] hover:border-[var(--status-inprogress-text)] hover:text-[var(--text-primary)] transition-colors">
                                                       <Users size={10} />
                                                     </div>
                                                   );
@@ -2135,7 +2135,7 @@ export default function ProjectViewPage() {
                                       if (e.key === "Escape") setActiveInlineSection(null);
                                     }}
                                     autoFocus
-                                    className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1 rounded text-xs text-white w-full max-w-sm outline-none"
+                                    className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1 rounded text-xs text-[var(--text-primary)] w-full max-w-sm outline-none"
                                   />
                                   <button
                                     onClick={() => handleInlineAddSubmit(group.id, group.name)}
@@ -2145,7 +2145,7 @@ export default function ProjectViewPage() {
                                   </button>
                                   <button
                                     onClick={() => setActiveInlineSection(null)}
-                                    className="text-[10px] text-[var(--text-muted)] hover:text-white cursor-pointer"
+                                    className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                                   >
                                     Cancel
                                   </button>
@@ -2188,7 +2188,7 @@ export default function ProjectViewPage() {
                         }
                       }}
                       autoFocus
-                      className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1 rounded text-xs text-white w-full max-w-sm outline-none"
+                      className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1 rounded text-xs text-[var(--text-primary)] w-full max-w-sm outline-none"
                     />
                     <button
                       onClick={handleSectionSubmit}
@@ -2202,7 +2202,7 @@ export default function ProjectViewPage() {
                         setIsAddingSection(false);
                         setNewSectionName("");
                       }}
-                      className="text-[10px] text-[var(--text-muted)] hover:text-white cursor-pointer"
+                      className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -2268,7 +2268,7 @@ export default function ProjectViewPage() {
                         {/* Task span bar */}
                         <div
                           onClick={() => setViewTaskId(t.id)}
-                          className="absolute inset-y-1 rounded-md flex items-center justify-between px-2 text-[8px] font-bold text-white shadow cursor-pointer hover:brightness-110 transition-all select-none truncate"
+                          className="absolute inset-y-1 rounded-md flex items-center justify-between px-2 text-[8px] font-bold text-[var(--text-primary)] shadow cursor-pointer hover:brightness-110 transition-all select-none truncate"
                           style={{
                             gridColumnStart: startDay,
                             gridColumnEnd: endDay + 1,
@@ -2414,7 +2414,7 @@ export default function ProjectViewPage() {
                           setIsEditChartModalOpen(true);
                           setIsAddFilterDropdownOpen(false);
                         }}
-                        className="text-[10px] text-[var(--text-muted)] hover:text-white flex items-center gap-1 cursor-pointer w-fit select-none focus:outline-none"
+                        className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center gap-1 cursor-pointer w-fit select-none focus:outline-none"
                       >
                         <ListFilter size={11} className="shrink-0" /> {defaultFilterText}
                       </button>
@@ -2446,7 +2446,7 @@ export default function ProjectViewPage() {
                     )}
                   </div>
                   <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-default)]/30">
-                    <button className="text-[var(--text-muted)] hover:text-white p-1 cursor-pointer">
+                    <button className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 cursor-pointer">
                       <GripVertical size={14} />
                     </button>
                     <button
@@ -2500,7 +2500,7 @@ export default function ProjectViewPage() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-default)]/30">
-                    <button className="text-[var(--text-muted)] hover:text-white p-1 cursor-pointer">
+                    <button className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 cursor-pointer">
                       <GripVertical size={14} />
                     </button>
                     <button
@@ -2530,14 +2530,14 @@ export default function ProjectViewPage() {
                           <XAxis dataKey="name" tick={<CustomXAxisTick />} axisLine={false} tickLine={false} />
                           <YAxis stroke="var(--text-muted)" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
                           <Tooltip contentStyle={{ background: "var(--bg-elevated)", border: "1px solid var(--border-default)", borderRadius: 8, fontSize: 12 }} />
-                          <Bar dataKey="count" fill="#ffffff" barSize={4} radius={[2, 2, 0, 0]} />
-                          <Line type="monotone" dataKey="count" stroke="none" dot={{ r: 6, fill: "#ccd1df", strokeWidth: 0 }} />
+                          <Bar dataKey="count" fill="var(--text-primary)" barSize={4} radius={[2, 2, 0, 0]} />
+                          <Line type="monotone" dataKey="count" stroke="none" dot={{ r: 6, fill: "var(--border-default)", strokeWidth: 0 }} />
                         </ComposedChart>
                       </ResponsiveContainer>
                     )}
                   </div>
                   <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-default)]/30">
-                    <button className="text-[var(--text-muted)] hover:text-white p-1 cursor-pointer">
+                    <button className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 cursor-pointer">
                       <GripVertical size={14} />
                     </button>
                   </div>
@@ -2551,9 +2551,9 @@ export default function ProjectViewPage() {
                       <h3 className="text-sm font-bold text-[var(--text-primary)]">Task completion over time</h3>
                     </div>
                     <div className="flex items-center gap-3 text-[var(--text-muted)]">
-                      <Maximize2 size={14} className="hover:text-white cursor-pointer" />
-                      <Edit2 size={14} className="hover:text-white cursor-pointer" />
-                      <MoreHorizontal size={14} className="hover:text-white cursor-pointer" />
+                      <Maximize2 size={14} className="hover:text-[var(--text-primary)] cursor-pointer" />
+                      <Edit2 size={14} className="hover:text-[var(--text-primary)] cursor-pointer" />
+                      <MoreHorizontal size={14} className="hover:text-[var(--text-primary)] cursor-pointer" />
                     </div>
                   </div>
 
@@ -2585,7 +2585,7 @@ export default function ProjectViewPage() {
                   </div>
 
                   <div className="flex flex-col gap-1 items-end pr-2 mb-2">
-                    <span className="text-[10px] text-[var(--text-muted)] hover:text-white cursor-pointer font-medium">+ more</span>
+                    <span className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer font-medium">+ more</span>
                     <div className="flex items-center gap-4 text-xs select-none">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded bg-white border border-[var(--border-default)]" />
@@ -2599,7 +2599,7 @@ export default function ProjectViewPage() {
                   </div>
 
                   <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-default)]/30">
-                    <button className="text-[var(--text-muted)] hover:text-white p-1 cursor-pointer">
+                    <button className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 cursor-pointer">
                       <GripVertical size={14} />
                     </button>
                     <button
@@ -2647,7 +2647,7 @@ export default function ProjectViewPage() {
               <h2 className="text-sm font-bold text-[var(--text-primary)]">Edit chart</h2>
               <button
                 onClick={() => setIsEditChartModalOpen(false)}
-                className="text-[var(--text-muted)] hover:text-white p-1 cursor-pointer transition-colors"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 cursor-pointer transition-colors"
               >
                 <X size={18} />
               </button>
@@ -2671,7 +2671,7 @@ export default function ProjectViewPage() {
 
                 {/* Large Live Preview Number */}
                 <div className="flex-1 flex items-center justify-center">
-                  <span className="text-8xl font-light text-white tracking-tighter">
+                  <span className="text-8xl font-light text-[var(--text-primary)] tracking-tighter">
                     {computeCardValue(tempCardConfig, projectTasks, today)}
                   </span>
                 </div>
@@ -2690,7 +2690,7 @@ export default function ProjectViewPage() {
                   <div className="flex flex-col gap-2">
                     <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Chart details</span>
                     <div className="flex bg-[var(--bg-base)] p-1 rounded-lg border border-[var(--border-default)]/60">
-                      <button className="flex-1 py-1.5 text-xs font-semibold text-white bg-[var(--bg-elevated)] rounded-md cursor-pointer transition-colors">
+                      <button className="flex-1 py-1.5 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-elevated)] rounded-md cursor-pointer transition-colors">
                         Work
                       </button>
                       <button className="flex-1 py-1.5 text-xs font-semibold text-[var(--text-disabled)] rounded-md cursor-not-allowed flex items-center justify-center gap-1 opacity-60">
@@ -2909,7 +2909,7 @@ export default function ProjectViewPage() {
                 <div className="p-4 border-t border-[var(--border-default)]/60 bg-[var(--bg-surface)] flex justify-end gap-2 shrink-0">
                   <button
                     onClick={() => setIsEditChartModalOpen(false)}
-                    className="px-4 py-2 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:text-white border border-[var(--border-default)] hover:bg-[var(--bg-raised)] cursor-pointer transition-colors"
+                    className="px-4 py-2 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-raised)] cursor-pointer transition-colors"
                   >
                     Cancel
                   </button>

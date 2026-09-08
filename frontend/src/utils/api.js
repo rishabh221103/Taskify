@@ -1,6 +1,6 @@
-export const API_BASE = typeof window !== "undefined" && window.location.hostname === "127.0.0.1"
+export const API_BASE = import.meta.env.VITE_API_BASE || (typeof window !== "undefined" && window.location.hostname === "127.0.0.1"
   ? "http://127.0.0.1:8000"
-  : "http://localhost:8000";
+  : "http://localhost:8000");
 
 export const apiRequest = async (url, options = {}) => {
   const token = sessionStorage.getItem("authToken");
@@ -84,3 +84,4 @@ export const apiRequest = async (url, options = {}) => {
 export const ensureCsrf = async () => {
   // No-op for Bearer token auth
 };
+

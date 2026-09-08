@@ -423,7 +423,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
               isCompleted
                 ? "bg-[var(--status-completed-bg)] border-[var(--status-completed-text)] text-[var(--status-completed-text)] font-bold"
-                : "bg-transparent border-[var(--border-default)] text-[var(--text-muted)] hover:border-[var(--status-inprogress-text)] hover:text-white"
+                : "bg-transparent border-[var(--border-default)] text-[var(--text-muted)] hover:border-[var(--status-inprogress-text)] hover:text-[var(--text-primary)]"
             }`}
           >
             <Check size={14} className={isCompleted ? "stroke-[3px]" : "opacity-40"} />
@@ -445,17 +445,17 @@ export default function TaskDetailPanel({ taskId, onClose }) {
               {/* Thumbs up */}
               <button 
                 onClick={() => setLiked(!liked)} 
-                className={`p-2 rounded-lg cursor-pointer transition-colors ${liked ? "text-[var(--status-inprogress-text)] bg-[var(--status-inprogress-text)]/10" : "text-[var(--text-muted)] hover:text-white"}`}
+                className={`p-2 rounded-lg cursor-pointer transition-colors ${liked ? "text-[var(--status-inprogress-text)] bg-[var(--status-inprogress-text)]/10" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"}`}
                 title="Like task"
               >
                 <ThumbsUp size={14} />
               </button>
               {/* Copy link */}
-              <button className="p-2 rounded-lg text-[var(--text-muted)] hover:text-white cursor-pointer" title="Copy Link"><LinkIcon size={14} /></button>
+              <button className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer" title="Copy Link"><LinkIcon size={14} /></button>
               {/* Fullscreen */}
               <button 
                 onClick={() => setIsFullscreen(!isFullscreen)} 
-                className={`p-2 rounded-lg cursor-pointer transition-colors ${isFullscreen ? "text-[var(--status-inprogress-text)] bg-[var(--status-inprogress-text)]/10" : "text-[var(--text-muted)] hover:text-white"}`}
+                className={`p-2 rounded-lg cursor-pointer transition-colors ${isFullscreen ? "text-[var(--status-inprogress-text)] bg-[var(--status-inprogress-text)]/10" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"}`}
                 title="Fullscreen"
               >
                 <Maximize2 size={14} />
@@ -464,7 +464,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
               <div className="relative" ref={moreOptionsRef}>
                 <button 
                   onClick={() => setMoreOptionsOpen(!moreOptionsOpen)} 
-                  className="p-2 rounded-lg text-[var(--text-muted)] hover:text-white cursor-pointer" 
+                  className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer" 
                   title="More options"
                 >
                   <MoreHorizontal size={14} />
@@ -486,7 +486,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
               {/* Close panel */}
               <button 
                 onClick={handleClose} 
-                className="p-2 rounded-lg text-[var(--text-muted)] hover:text-white cursor-pointer" 
+                className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer" 
                 title="Collapse to right"
               >
                 <ArrowRightToLine size={14} />
@@ -502,7 +502,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="Task Title *"
             rows={1}
-            className={`w-full bg-transparent border-0 outline-none resize-none text-[20px] font-bold text-white placeholder-[var(--border-default)] ${display} focus:ring-0 p-0 leading-snug`}
+            className={`w-full bg-transparent border-0 outline-none resize-none text-[20px] font-bold text-[var(--text-primary)] placeholder-[var(--border-default)] ${display} focus:ring-0 p-0 leading-snug`}
             onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
           />
         </div>
@@ -519,7 +519,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
               <div className="relative" ref={assigneeRef}>
                 <button
                   onClick={() => setAssigneeOpen(!assigneeOpen)}
-                  className="flex items-center gap-2.5 text-xs text-[var(--text-primary)] hover:text-white transition-colors cursor-pointer"
+                  className="flex items-center gap-2.5 text-xs text-[var(--text-primary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 >
                   {taskAssignees.length > 0 ? (
                     <>
@@ -589,7 +589,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
                       placeholder="Search members..."
                       value={assigneeSearchQuery}
                       onChange={(e) => setAssigneeSearchQuery(e.target.value)}
-                      className="w-full bg-[var(--bg-base)] border border-[var(--border-default)]/70 px-2.5 py-1.5 rounded-lg text-xs text-white placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
+                      className="w-full bg-[var(--bg-base)] border border-[var(--border-default)]/70 px-2.5 py-1.5 rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-disabled)] focus:outline-none focus:border-[var(--status-inprogress-text)]"
                     />
 
                     <div className="flex flex-col gap-1">
@@ -634,7 +634,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
                     onChange={(e) => handleDueDateChange(e.target.value)}
                     className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
                   />
-                  <button className="flex items-center gap-2.5 text-xs text-[var(--text-primary)] hover:text-white transition-colors cursor-pointer">
+                  <button className="flex items-center gap-2.5 text-xs text-[var(--text-primary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer">
                     {task.due && task.due !== "TBD" ? (
                       <>
                         <div className="w-6 h-6 rounded-full border border-[var(--border-default)]/40 flex items-center justify-center text-[var(--status-onhold-text)] shrink-0 bg-[var(--status-onhold-text)]/5">
@@ -660,7 +660,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
               <span className="text-xs text-[var(--text-muted)] font-medium">Dependencies</span>
               <button 
                 onClick={() => alert("Dependencies feature coming soon!")}
-                className="text-xs text-[var(--text-disabled)] hover:text-white font-medium transition-colors text-left cursor-pointer"
+                className="text-xs text-[var(--text-disabled)] hover:text-[var(--text-primary)] font-medium transition-colors text-left cursor-pointer"
               >
                 Add dependencies
               </button>
@@ -675,9 +675,9 @@ export default function TaskDetailPanel({ taskId, onClose }) {
               <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
                 <span>Projects</span>
                 <span className="px-1.5 py-0.5 rounded bg-[var(--border-default)]/40 text-[9px] text-[var(--text-muted)] font-bold">1</span>
-                <button className="text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"><Plus size={11} /></button>
+                <button className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"><Plus size={11} /></button>
               </div>
-              <button className="text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"><Search size={11} /></button>
+              <button className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"><Search size={11} /></button>
             </div>
 
             {/* Collapsible Project Area */}
@@ -687,7 +687,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
                 {/* Chevron */}
                 <button 
                   onClick={() => setProjectsCollapsed(!projectsCollapsed)}
-                  className={`text-[var(--text-muted)] hover:text-white transition-all cursor-pointer ${projectsCollapsed ? "-rotate-90" : ""}`}
+                  className={`text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer ${projectsCollapsed ? "-rotate-90" : ""}`}
                 >
                   <ChevronDown size={14} />
                 </button>
@@ -701,7 +701,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
                       navigate(`/admin/projects/${project.id}`);
                     }
                   }}
-                  className={`text-xs font-semibold text-white ${project ? "hover:text-[var(--status-inprogress-text)] cursor-pointer hover:underline" : ""}`}
+                  className={`text-xs font-semibold text-[var(--text-primary)] ${project ? "hover:text-[var(--status-inprogress-text)] cursor-pointer hover:underline" : ""}`}
                 >
                   {project ? project.name : "Unassigned"}
                 </span>
@@ -711,7 +711,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
                   <div className="relative ml-2" ref={sectionDropdownRef}>
                     <button 
                       onClick={() => setSectionDropdownOpen(!sectionDropdownOpen)}
-                      className="flex items-center gap-1 px-2 py-0.5 rounded border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-raised)] text-[10px] text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+                      className="flex items-center gap-1 px-2 py-0.5 rounded border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-raised)] text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                     >
                       <span>{task.section || "Untitled section"}</span>
                       <ChevronDown size={10} />
@@ -796,7 +796,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
                     </div>
                     <button 
                       onClick={() => alert("Designer column editor coming soon!")}
-                      className="text-xs text-[var(--text-disabled)] hover:text-white font-semibold transition-colors text-left cursor-pointer"
+                      className="text-xs text-[var(--text-disabled)] hover:text-[var(--text-primary)] font-semibold transition-colors text-left cursor-pointer"
                     >
                       —
                     </button>
@@ -943,7 +943,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
               <button
                 onClick={() => setActiveTab("comments")}
                 className={`flex items-center gap-1.5 pb-2 px-3 text-xs font-semibold cursor-pointer border-b-2 transition-all ${
-                  activeTab === "comments" ? "border-[var(--status-inprogress-text)] text-white" : "border-transparent text-[var(--text-muted)] hover:text-white"
+                  activeTab === "comments" ? "border-[var(--status-inprogress-text)] text-[var(--text-primary)]" : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 <MessageSquare size={13} />
@@ -952,7 +952,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
               <button
                 onClick={() => setActiveTab("activity")}
                 className={`flex items-center gap-1.5 pb-2 px-3 text-xs font-semibold cursor-pointer border-b-2 transition-all ${
-                  activeTab === "activity" ? "border-[var(--status-inprogress-text)] text-white" : "border-transparent text-[var(--text-muted)] hover:text-white"
+                  activeTab === "activity" ? "border-[var(--status-inprogress-text)] text-[var(--text-primary)]" : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 <ActivityIcon size={13} />
@@ -984,7 +984,7 @@ export default function TaskDetailPanel({ taskId, onClose }) {
                           </div>
                           <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl px-3.5 py-2.5 flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2 mb-1">
-                              <span className="text-xs font-bold text-white truncate">{commUser.name || comm.authorName || comm.author}</span>
+                              <span className="text-xs font-bold text-[var(--text-primary)] truncate">{commUser.name || comm.authorName || comm.author}</span>
                               <span className="text-[9px] text-[var(--text-disabled)] shrink-0">{comm.time || comm.timestamp}</span>
                             </div>
                             <p className="text-xs text-[var(--text-secondary)] leading-relaxed break-words">{comm.text || comm.body}</p>

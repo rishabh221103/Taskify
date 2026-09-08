@@ -20,6 +20,7 @@ import MemberHomePage from "./pages/member/MemberHomePage";
 import MemberTasksPage from "./pages/member/MemberTasksPage";
 import MemberProjectsPage from "./pages/member/MemberProjectsPage";
 import MemberCalendarPage from "./pages/member/MemberCalendarPage";
+import MemberAttendancePage from "./pages/member/MemberAttendancePage";
 
 import {
   rootIndexLoader,
@@ -29,6 +30,7 @@ import {
   loginLoader,
   dashboardLoader,
   attendanceLoader,
+  memberAttendanceLoader,
 } from "./loaders/appLoaders";
 
 function AppProviderWrapper() {
@@ -154,8 +156,8 @@ const router = createBrowserRouter([
           },
           {
             path: "attendance",
-            loader: attendanceLoader,
-            element: <AttendancePage />,
+            loader: memberAttendanceLoader,
+            element: <MemberAttendancePage />,
           },
           {
             path: "messages",

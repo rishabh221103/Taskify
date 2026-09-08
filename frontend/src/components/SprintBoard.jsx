@@ -213,7 +213,7 @@ export default function SprintBoard({ customTasks }) {
                               const newCol = isCardDone ? "To do" : "Done";
                               updateTask(t.id, { column: newCol, status: isCardDone ? "todo" : "done", is_completed: !isCardDone });
                             }}
-                            className="mt-0.5 text-[var(--text-muted)] hover:text-white cursor-pointer shrink-0 focus:outline-none"
+                            className="mt-0.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer shrink-0 focus:outline-none"
                             title={isCardDone ? "Mark incomplete" : "Mark complete"}
                           >
                             {isCardDone ? (
@@ -235,7 +235,7 @@ export default function SprintBoard({ customTasks }) {
                               uploadTargetTaskIdRef.current = t.id;
                               fileInputRef.current?.click();
                             }}
-                            className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-[var(--border-default)] cursor-pointer text-[var(--text-muted)] hover:text-white transition-colors"
+                            className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-[var(--border-default)] cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                             title="Upload picture"
                           >
                             <Upload size={13} />
@@ -323,7 +323,7 @@ export default function SprintBoard({ customTasks }) {
                                   const formatted = dateVal ? new Date(dateVal).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "TBD";
                                   updateTask(t.id, { due: formatted, due_date: dateVal });
                                 }}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer [color-scheme:dark]"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
                               />
                             </div>
                             {assigner && (

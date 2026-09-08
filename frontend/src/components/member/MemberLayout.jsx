@@ -11,6 +11,8 @@ import {
   CheckCircle2,
   Sparkles,
   MessageSquare,
+  Menu,
+  X,
 } from "lucide-react";
 import TaskDetailPanel from "../TaskDetailPanel";
 
@@ -30,6 +32,9 @@ export default function MemberLayout() {
     viewTaskId,
     setViewTaskId,
     currentUserId,
+    sidebarOpen,
+    toggleSidebar,
+    setSidebarOpen,
   } = useContext(AppContext);
 
   const currentUser = contextUser || loaderData?.currentUser;
@@ -67,8 +72,18 @@ export default function MemberLayout() {
         <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 z-[100] animate-pulse shadow-md" />
       )}
 
+      {/* Backdrop overlay for compact viewports */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/60 lg:hidden transition-opacity duration-300 ease-in-out pointer-events-none ${
+
+          sidebarOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      />
+
       {/* ─── Member Sidebar ─── */}
-      <aside className="w-64 shrink-0 border-r border-[var(--border-default)]/40 bg-[var(--bg-surface)] flex flex-col justify-between select-none">
+      <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 shrink-0 border-r border-[var(--border-default)]/40 bg-[var(--bg-surface)] justify-between select-none transition-[transform,margin,opacity] duration-300 ease-in-out lg:static lg:h-full ${
+        sidebarOpen ? "translate-x-0 lg:ml-0 lg:opacity-100 lg:pointer-events-auto" : "-translate-x-full lg:-ml-64 lg:opacity-0 lg:pointer-events-none"
+      }`}>
         <div>
           {/* App Brand Header */}
           <div className="flex items-center gap-3 px-6 py-5 border-b border-[var(--border-default)]/30">
@@ -77,7 +92,7 @@ export default function MemberLayout() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className={`${display} font-bold text-base text-white tracking-tight`}>Taskify</span>
+                <span className={`${display} font-bold text-base text-gray-900 dark:text-gray-100 tracking-tight`}>Taskify</span>
                 <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-[var(--status-inprogress-text)]/15 text-[var(--status-inprogress-text)] border border-[var(--status-inprogress-text)]/30">
                   Member
                 </span>
@@ -103,7 +118,7 @@ export default function MemberLayout() {
                     `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
                       isActive
                         ? "bg-[var(--status-inprogress-text)] text-white shadow-md shadow-[var(--status-inprogress-text)]/20 font-bold"
-                        : "text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-elevated)]"
+                        : "text-[var(--text-muted)] hover:text-gray-900 dark:hover:text-gray-100 hover:bg-[var(--bg-elevated)]"
                     }`
                   }
                 >
@@ -130,7 +145,7 @@ export default function MemberLayout() {
                 )}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-white truncate">{currentUser?.name || "Member"}</p>
+                <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate">{currentUser?.name || "Member"}</p>
                 <p className="text-[10px] text-[var(--text-muted)] truncate">{currentUser?.title || "Team Member"}</p>
               </div>
             </div>
@@ -149,10 +164,37 @@ export default function MemberLayout() {
       {/* ─── Main Content Area ─── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 shrink-0 border-b border-[var(--border-default)]/40 bg-[var(--bg-surface)]/60 backdrop-blur px-8 flex items-center justify-between z-10">
-          <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+        <header className="h-16 shrink-0 border-b border-[var(--border-default)]/40 bg-[var(--bg-surface)]/60 backdrop-blur px-5 md:px-8 flex items-center justify-between z-10 gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              data-sidebar-toggle="true"
+              type="button"
+              onClick={toggleSidebar}
+              onMouseEnter={() => setSidebarOpen(true)}
+              className="p-2 rounded-xl border border-[var(--border-default)]/60 bg-[var(--bg-elevated)] hover:bg-[var(--bg-raised)] text-[var(--text-primary)] cursor-pointer flex items-center justify-center shrink-0 transition-all duration-200 active:scale-95 shadow-sm"
+              title={sidebarOpen ? "Collapse navigation" : "Expand navigation"}
+              aria-label="Toggle navigation"
+            >
+              <div className="relative w-5 h-5 flex items-center justify-center">
+                <Menu
+                  size={18}
+                  className={`absolute transition-all duration-300 ease-in-out transform ${
+                    sidebarOpen ? "opacity-0 rotate-90 scale-75 pointer-events-none" : "opacity-100 rotate-0 scale-100"
+                  }`}
+                />
+                <X
+                  size={18}
+                  className={`absolute transition-all duration-300 ease-in-out transform ${
+                    sidebarOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75 pointer-events-none"
+                  }`}
+                />
+              </div>
+            </button>
+
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
             <Sparkles size={14} className="text-[var(--status-inprogress-text)]" />
-            <span>Welcome back, <strong className="text-white">{currentUser?.name?.split(" ")[0]}</strong></span>
+            <span>Welcome back, <strong className="text-gray-900 dark:text-gray-100">{currentUser?.name?.split(" ")[0]}</strong></span>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -163,7 +205,7 @@ export default function MemberLayout() {
 
             <button
               onClick={logout}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border-default)]/60 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-[var(--bg-elevated)] cursor-pointer transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border-default)]/60 text-xs font-semibold text-[var(--text-muted)] hover:text-gray-900 dark:hover:text-gray-100 hover:bg-[var(--bg-elevated)] cursor-pointer transition-colors"
             >
               <LogOut size={13} /> Sign out
             </button>
@@ -183,3 +225,5 @@ export default function MemberLayout() {
     </div>
   );
 }
+
+

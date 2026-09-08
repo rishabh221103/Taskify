@@ -185,3 +185,44 @@ export async function attendanceLoader({ request }) {
     };
   }
 }
+
+/**
+ * Loader for Member-Scoped Attendance Self-Service
+ */
+export async function memberAttendanceLoader({ request }) {
+  const url = new URL(request.url);
+  const now = new Date();
+  const todayMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const monthStr = url.searchParams.get("month") || todayMonthStr;
+
+  try {
+    const data = await apiRequest(`/api/my-attendance?month=${monthStr}`);
+    return {
+      today: data.today || null,
+      records: data.records || [],
+      stats: data.stats || {
+        present_days: 0,
+        late_days: 0,
+        absent_days: 0,
+        attendance_rate: 100,
+        streak: 0,
+      },
+      monthStr,
+    };
+  } catch (err) {
+    console.error("Member attendance loader error:", err);
+    return {
+      today: null,
+      records: [],
+      stats: {
+        present_days: 0,
+        late_days: 0,
+        absent_days: 0,
+        attendance_rate: 100,
+        streak: 0,
+      },
+      monthStr,
+    };
+  }
+}
+

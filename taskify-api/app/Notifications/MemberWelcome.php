@@ -40,7 +40,8 @@ class MemberWelcome extends Notification implements ShouldQueue
             ? $notifiable->organization->name 
             : 'Taskify';
             
-        $loginUrl = 'http://localhost:5173/login';
+        $frontendUrl = rtrim(config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:5173')), '/');
+        $loginUrl = $frontendUrl . '/login';
 
         return (new MailMessage)
             ->subject('Welcome to Taskify - Your Account Credentials')

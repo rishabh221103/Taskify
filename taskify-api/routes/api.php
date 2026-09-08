@@ -16,9 +16,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
-    // Attendance
+    // Attendance (Admin / Org-Wide & Member Self-Service)
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance', [AttendanceController::class, 'store']);
+    Route::get('/my-attendance', [AttendanceController::class, 'myAttendance']);
+    Route::post('/my-attendance', [AttendanceController::class, 'markMyAttendance']);
 
     // Messaging
     Route::get('/conversations', [\App\Http\Controllers\Api\MessageController::class, 'conversations']);
@@ -32,6 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/projects', [\App\Http\Controllers\Api\MemberPortalController::class, 'projects']);
         Route::get('/team', [\App\Http\Controllers\Api\MemberPortalController::class, 'team']);
         Route::patch('/tasks/{task}', [\App\Http\Controllers\Api\MemberPortalController::class, 'updateTask']);
+        Route::get('/attendance', [AttendanceController::class, 'myAttendance']);
+        Route::post('/attendance', [AttendanceController::class, 'markMyAttendance']);
     });
 
     // Task Item Actions (Subtasks, Attachments, Comments, Column Moves)

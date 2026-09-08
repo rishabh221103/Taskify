@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import ProfileMenu from "./ProfileMenu";
-import { Search as SearchIcon, Bell, Menu, Sun, Moon, Settings } from "lucide-react";
+import { Search as SearchIcon, Bell, Menu, X, Sun, Moon, Settings } from "lucide-react";
 import { PRIORITY_COLOR, NOTIFICATIONS } from "../data/mockData";
 
 const card = "bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-2xl";
@@ -30,6 +30,9 @@ export default function Topbar() {
     goToTask,
     tasks,
     projects,
+    sidebarOpen,
+    toggleSidebar,
+    setSidebarOpen,
     setMobileSidebarOpen,
     theme,
     toggleTheme,
@@ -65,16 +68,45 @@ export default function Topbar() {
 
   return (
     <header className="sticky top-0 z-30 flex items-center gap-4 px-5 md:px-8 py-4 border-b border-[var(--border-default)] bg-[var(--bg-base)]/90 backdrop-blur-md">
-      {/* Mobile Toggle Button */}
+      {/* Task Manager Internal Sidebar Hamburger Toggle Button */}
       <button
-        onClick={() => setMobileSidebarOpen(true)}
-        className="md:hidden p-1.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-raised)] text-[var(--text-primary)] cursor-pointer flex items-center justify-center shrink-0"
-        title="Open Navigation"
+        data-sidebar-toggle="true"
+        type="button"
+        onClick={toggleSidebar}
+        onMouseEnter={() => setSidebarOpen(true)}
+        className="p-2 rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-raised)] text-[var(--text-primary)] cursor-pointer flex items-center justify-center shrink-0 transition-all duration-200 hover:border-[var(--status-inprogress-text)]/40 active:scale-95 shadow-sm"
+        title={sidebarOpen ? "Collapse Task Manager navigation" : "Expand Task Manager navigation"}
+        aria-label="Toggle Task Manager navigation"
       >
-        <Menu size={18} />
+        <div className="relative w-5 h-5 flex items-center justify-center">
+          <Menu
+            size={18}
+            className={`absolute transition-all duration-300 ease-in-out transform ${
+              sidebarOpen
+                ? "opacity-0 rotate-90 scale-75 pointer-events-none"
+                : "opacity-100 rotate-0 scale-100 text-[var(--text-primary)]"
+            }`}
+          />
+          <X
+            size={18}
+            className={`absolute transition-all duration-300 ease-in-out transform ${
+              sidebarOpen
+                ? "opacity-100 rotate-0 scale-100 text-[var(--text-primary)]"
+                : "opacity-0 -rotate-90 scale-75 pointer-events-none"
+            }`}
+          />
+        </div>
       </button>
 
-      <span className={`${display} font-semibold md:hidden`}>Taskify</span>
+      {/* Task Manager Brand (positioned on the left, after the hamburger button) */}
+      <div className="flex items-center gap-2 shrink-0 select-none">
+        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${display} text-xs font-bold bg-[var(--status-onhold-text)] text-[#12151b] shadow-sm`}>
+          T
+        </div>
+        <span className={`${display} font-semibold text-base tracking-tight text-[var(--text-primary)]`}>
+          Taskify
+        </span>
+      </div>
       <div className="relative flex-1 max-w-md" ref={searchRef}>
         <div className="flex items-center gap-2 rounded-lg px-3 py-2 bg-[var(--bg-raised)] border border-[var(--border-default)]">
           <SearchIcon size={16} className={muted} />
@@ -222,3 +254,4 @@ export default function Topbar() {
     </header>
   );
 }
+

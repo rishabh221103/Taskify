@@ -47,7 +47,8 @@ export function AppProvider({ children }) {
   const [draft, setDraft] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(() => (typeof window !== "undefined" ? window.innerWidth >= 1024 : true));
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [viewMemberId, setViewMemberId] = useState(null);
   const [viewTaskId, setViewTaskId] = useState(null);
@@ -754,7 +755,9 @@ export function AppProvider({ children }) {
     const root = document.documentElement;
     if (theme === "light") {
       root.classList.add("light");
+      root.classList.remove("dark");
     } else {
+      root.classList.add("dark");
       root.classList.remove("light");
     }
     localStorage.setItem("theme", theme);
@@ -870,8 +873,11 @@ export function AppProvider({ children }) {
         setHasUnread,
         currentUserId,
         setCurrentUserId,
-        mobileSidebarOpen,
-        setMobileSidebarOpen,
+        sidebarOpen,
+        setSidebarOpen,
+        toggleSidebar,
+        mobileSidebarOpen: sidebarOpen,
+        setMobileSidebarOpen: setSidebarOpen,
         members,
         setMembers,
         changePasswordOpen,
@@ -968,3 +974,4 @@ export function AppProvider({ children }) {
     </AppContext.Provider>
   );
 }
+

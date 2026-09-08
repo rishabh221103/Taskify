@@ -165,8 +165,8 @@ function AddTaskForm({ projectId, projectMembers, onClose }) {
         <input
           type="date"
           value={form.due}
-          onChange={(e) => setForm({ ...form, due: e.target.value })}
-          className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-3 py-2.5 rounded-lg text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:dark]"
+          onChange={(e) => setForm((prev) => ({ ...prev, due: e.target.value }))}
+          className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-3 py-2.5 rounded-lg text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
         />
         <select
           value={form.priority}
@@ -184,7 +184,7 @@ function AddTaskForm({ projectId, projectMembers, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="px-3.5 py-2 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
+          className="px-3.5 py-2 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
         >
           Cancel
         </button>
@@ -301,7 +301,7 @@ export default function ProjectDetailPanel({ projectId, onClose }) {
               <Briefcase size={20} className="text-[var(--status-inprogress-text)]" />
             </div>
             <div className="min-w-0">
-              <h2 className={`${display} font-bold text-[17px] text-white truncate`}>{p.name}</h2>
+              <h2 className={`${display} font-bold text-[17px] text-[var(--text-primary)] truncate`}>{p.name}</h2>
               <div className="flex items-center gap-2.5 mt-1.5">
                 <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${theme.bg}`}>
                   {p.status}
@@ -314,7 +314,7 @@ export default function ProjectDetailPanel({ projectId, onClose }) {
           </div>
           <button
             onClick={handleClose}
-            className="text-[var(--text-muted)] hover:text-white cursor-pointer transition-colors shrink-0 mt-1 p-1 rounded-lg hover:bg-[var(--bg-raised)]"
+            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors shrink-0 mt-1 p-1 rounded-lg hover:bg-[var(--bg-raised)]"
           >
             <X size={18} />
           </button>
@@ -389,7 +389,7 @@ export default function ProjectDetailPanel({ projectId, onClose }) {
                 type="date"
                 value={p.startDate || ""}
                 onChange={(e) => updateProject(p.id, { startDate: e.target.value })}
-                className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1.5 rounded-lg text-[11px] text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:dark]"
+                className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1.5 rounded-lg text-[11px] text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
               />
             </div>
             <span className="text-[var(--status-inprogress-text)] font-semibold text-sm">→</span>
@@ -406,7 +406,7 @@ export default function ProjectDetailPanel({ projectId, onClose }) {
                     : "TBD";
                   updateProject(p.id, { endDate: newEndDate, due: dueLabel });
                 }}
-                className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1.5 rounded-lg text-[11px] text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:dark]"
+                className="bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1.5 rounded-lg text-[11px] text-[var(--text-primary)] focus:outline-none focus:border-[var(--status-inprogress-text)] cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
               />
             </div>
           </div>

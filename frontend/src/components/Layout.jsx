@@ -39,8 +39,7 @@ export default function Layout() {
 
   useEffect(() => {
     mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-    setMobileSidebarOpen(false);
-  }, [pathname, setMobileSidebarOpen]);
+  }, [pathname]);
 
   if (!currentUserId) {
     return null;
