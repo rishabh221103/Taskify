@@ -40,14 +40,18 @@ class ProjectAssigned extends Notification implements ShouldQueue
     {
         $description = $this->project->description ?: 'No description provided.';
         $isOwner = method_exists($notifiable, 'hasRole') && $notifiable->hasRole('owner');
+        $frontendUrl = rtrim(config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:5173')), '/');
         $link = $isOwner
-            ? 'http://localhost:5173/admin/projects/' . $this->project->id
-            : 'http://localhost:5173/member/projects';
+            ? $frontendUrl . '/admin/projects/' . $this->project->id
+            : $frontendUrl . '/member/projects/' . $this->project->id;
+
+        $isManager = $this->project->manager_id === $notifiable->id;
+        $roleContext = $isManager ? 'as the manager for' : 'to';
 
         return (new MailMessage)
             ->subject('New Project Assignment: ' . $this->project->name)
             ->greeting('Hello ' . $notifiable->name . ',')
-            ->line('You have been assigned as the manager for the project: **' . $this->project->name . '**')
+            ->line('You have been assigned ' . $roleContext . ' the project: **' . $this->project->name . '**')
             ->line('Description: ' . $description)
             ->action('Open Project', $link)
             ->line('Thank you for using Taskify!');

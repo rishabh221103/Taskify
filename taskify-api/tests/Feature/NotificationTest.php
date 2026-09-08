@@ -8,6 +8,7 @@ use App\Models\Section;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\ProjectAssigned;
+use App\Notifications\ProjectDueReminder;
 use App\Notifications\TaskAssigned;
 use App\Notifications\TaskDueReminder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -221,5 +222,152 @@ class NotificationTest extends TestCase
         $this->assertNotNull($newMember);
 
         Notification::assertSentTo($newMember, \App\Notifications\MemberWelcome::class);
+    }
+
+    public function test_project_assignment_notification_sent_to_multiple_members_on_creation()
+    {
+        Notification::fake();
+
+        $userC = User::create([
+            'name' => 'User C',
+            'email' => 'c@gmail.com',
+            'password' => bcrypt('password123'),
+            'organization_id' => $this->org->id,
+        ]);
+        $userC->assignRole('member');
+
+        $userD = User::create([
+            'name' => 'User D',
+            'email' => 'd@gmail.com',
+            'password' => bcrypt('password123'),
+            'organization_id' => $this->org->id,
+        ]);
+        $userD->assignRole('member');
+
+        $response = $this->actingAs($this->userA)->postJson('/api/projects', [
+            'name' => 'Multi-Member Project',
+            'description' => 'A project for multiple members',
+            'member_ids' => [$this->userB->id, $userC->id, $userD->id],
+        ]);
+
+        $response->assertStatus(201);
+
+        Notification::assertSentTo($this->userB, ProjectAssigned::class);
+        Notification::assertSentTo($userC, ProjectAssigned::class);
+        Notification::assertSentTo($userD, ProjectAssigned::class);
+    }
+
+    public function test_project_reassignment_notification_sent_only_to_newly_added_members()
+    {
+        Notification::fake();
+
+        $userC = User::create([
+            'name' => 'User C',
+            'email' => 'c2@gmail.com',
+            'password' => bcrypt('password123'),
+            'organization_id' => $this->org->id,
+        ]);
+        $userC->assignRole('member');
+
+        $userD = User::create([
+            'name' => 'User D',
+            'email' => 'd2@gmail.com',
+            'password' => bcrypt('password123'),
+            'organization_id' => $this->org->id,
+        ]);
+        $userD->assignRole('member');
+
+        $project = Project::create([
+            'organization_id' => $this->org->id,
+            'name' => 'Initial Team Project',
+        ]);
+        $project->users()->sync([$this->userB->id, $userC->id]);
+
+        $response = $this->actingAs($this->userA)->putJson("/api/projects/{$project->id}", [
+            'name' => 'Initial Team Project Updated',
+            'member_ids' => [$this->userB->id, $userC->id, $userD->id],
+        ]);
+
+        $response->assertStatus(200);
+
+        // Only newly added User D should get notified
+        Notification::assertSentTo($userD, ProjectAssigned::class);
+        Notification::assertNotSentTo($this->userB, ProjectAssigned::class);
+        Notification::assertNotSentTo($userC, ProjectAssigned::class);
+    }
+
+    public function test_task_assignment_notification_sent_to_multiple_assignees()
+    {
+        Notification::fake();
+
+        $userC = User::create([
+            'name' => 'User C',
+            'email' => 'c3@gmail.com',
+            'password' => bcrypt('password123'),
+            'organization_id' => $this->org->id,
+        ]);
+        $userC->assignRole('member');
+
+        $response = $this->actingAs($this->userA)->postJson('/api/tasks', [
+            'project_id' => $this->project->id,
+            'section_id' => $this->section->id,
+            'title' => 'Multi Assignee Task',
+            'status' => 'todo',
+            'assignee_ids' => [$this->userB->id, $userC->id],
+        ]);
+
+        $response->assertStatus(201);
+
+        Notification::assertSentTo($this->userB, TaskAssigned::class);
+        Notification::assertSentTo($userC, TaskAssigned::class);
+    }
+
+    public function test_send_project_due_reminders_command_sends_to_all_members_and_prevents_duplicates()
+    {
+        Notification::fake();
+
+        $userC = User::create([
+            'name' => 'User C',
+            'email' => 'c4@gmail.com',
+            'password' => bcrypt('password123'),
+            'organization_id' => $this->org->id,
+        ]);
+        $userC->assignRole('member');
+
+        // Project 1: Due tomorrow -> both userB and userC assigned -> both receive reminder
+        $project1 = Project::create([
+            'organization_id' => $this->org->id,
+            'name' => 'Project Due Tomorrow',
+            'deadline' => today()->addDay()->toDateString(),
+            'status' => 'in_progress',
+        ]);
+        $project1->users()->sync([$this->userB->id, $userC->id]);
+
+        // Project 2: Already completed -> should NOT get reminder
+        $project2 = Project::create([
+            'organization_id' => $this->org->id,
+            'name' => 'Completed Project',
+            'deadline' => today()->toDateString(),
+            'status' => 'completed',
+        ]);
+        $project2->users()->sync([$this->userB->id]);
+
+        // Run reminder command
+        Artisan::call('app:send-task-due-reminders');
+
+        // Verify notifications sent for project1 to userB and userC, not project2
+        Notification::assertSentTo($this->userB, ProjectDueReminder::class, function ($notification) use ($project2) {
+            return $notification->toArray($this->userB)['project_id'] !== $project2->id;
+        });
+        Notification::assertSentTo($userC, ProjectDueReminder::class);
+
+        // Verify reminder_sent_at populated on project1, not project2
+        $this->assertNotNull($project1->refresh()->reminder_sent_at);
+        $this->assertNull($project2->refresh()->reminder_sent_at);
+
+        // Run command a second time -> no notifications sent (duplicate check)
+        Notification::fake();
+        Artisan::call('app:send-task-due-reminders');
+        Notification::assertNothingSent();
     }
 }

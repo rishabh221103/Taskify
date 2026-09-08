@@ -6,21 +6,20 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Models\Project;
 
-use App\Models\Task;
-
-class TaskDueReminder extends Notification implements ShouldQueue
+class ProjectDueReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected Task $task;
+    protected Project $project;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Task $task)
+    public function __construct(Project $project)
     {
-        $this->task = $task;
+        $this->project = $project;
     }
 
     /**
@@ -38,28 +37,26 @@ class TaskDueReminder extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $dueDate = $this->task->due_date 
-            ? $this->task->due_date->format('M d, Y') 
-            : 'Not set';
-
-        $projectName = $this->task->project 
-            ? $this->task->project->name 
-            : 'No Project';
+        $deadline = $this->project->deadline
+            ? $this->project->deadline->format('M d, Y')
+            : 'Today/Tomorrow';
 
         $isOwner = method_exists($notifiable, 'hasRole') && $notifiable->hasRole('owner');
         $frontendUrl = rtrim(config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:5173')), '/');
         $link = $isOwner
-            ? $frontendUrl . '/admin/projects/' . $this->task->project_id
-            : $frontendUrl . '/member/tasks';
+            ? $frontendUrl . '/admin/projects/' . $this->project->id
+            : $frontendUrl . '/member/projects/' . $this->project->id;
+
+        $statusText = ucfirst(str_replace('_', ' ', $this->project->status));
 
         return (new MailMessage)
-            ->subject('Task Due Reminder: ' . $this->task->title)
+            ->subject('Project Deadline Reminder: ' . $this->project->name)
             ->greeting('Hello ' . $notifiable->name . ',')
-            ->line('This is a reminder that your task **' . $this->task->title . '** is due soon.')
-            ->line('Project: ' . $projectName)
-            ->line('Due Date: ' . $dueDate)
-            ->action('Open Task', $link)
-            ->line('Please make sure to complete it on time. Thank you!');
+            ->line('This is a reminder that the project **' . $this->project->name . '** is nearing its deadline.')
+            ->line('Deadline: ' . $deadline)
+            ->line('Current Status: ' . $statusText)
+            ->action('View Project', $link)
+            ->line('Thank you for using Taskify!');
     }
 
     /**
@@ -70,8 +67,9 @@ class TaskDueReminder extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'task_id' => $this->task->id,
-            'title' => $this->task->title,
+            'project_id' => $this->project->id,
+            'name' => $this->project->name,
+            'deadline' => $this->project->deadline ? $this->project->deadline->toDateString() : null,
         ];
     }
 }

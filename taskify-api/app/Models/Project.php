@@ -22,10 +22,12 @@ class Project extends Model
         'risk_level',
         'business_impact',
         'budget',
+        'reminder_sent_at',
     ];
 
     protected $casts = [
         'deadline' => 'date',
+        'reminder_sent_at' => 'datetime',
         'progress' => 'integer',
         'budget' => 'decimal:2',
     ];

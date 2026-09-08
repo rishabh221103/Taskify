@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Notification;
 
 class ProjectController extends Controller
 {
@@ -47,15 +48,22 @@ class ProjectController extends Controller
             'organization_id' => $project->organization_id,
         ]);
 
-        if ($project->manager_id) {
-            $manager = User::find($project->manager_id);
-            if ($manager) {
-                $manager->notify(new ProjectAssigned($project));
-            }
-        }
-
         if ($request->has('member_ids')) {
             $project->users()->sync($validated['member_ids'] ?? []);
+        }
+
+        // Notify all assigned members and manager
+        $recipientIds = collect($validated['member_ids'] ?? []);
+        if (!empty($project->manager_id)) {
+            $recipientIds->push($project->manager_id);
+        }
+        $recipientIds = $recipientIds->unique()->values();
+
+        if ($recipientIds->isNotEmpty()) {
+            $usersToNotify = User::whereIn('id', $recipientIds)->get();
+            if ($usersToNotify->isNotEmpty()) {
+                Notification::send($usersToNotify, new ProjectAssigned($project));
+            }
         }
 
         $project->load(['manager', 'users', 'sections'])
@@ -81,18 +89,40 @@ class ProjectController extends Controller
         $validated = $request->validated();
 
         $oldManagerId = $project->manager_id;
+        $oldMemberIds = $project->users()->pluck('users.id')->toArray();
+        $oldDeadline = $project->deadline ? $project->deadline->toDateString() : null;
+
+        // If deadline is updated and moved, reset reminder_sent_at so future reminders can be sent
+        if (array_key_exists('deadline', $validated) && $validated['deadline'] !== $oldDeadline) {
+            $validated['reminder_sent_at'] = null;
+        }
 
         $project->update($validated);
 
-        if ($project->manager_id && $project->manager_id != $oldManagerId) {
-            $manager = User::find($project->manager_id);
-            if ($manager) {
-                $manager->notify(new ProjectAssigned($project));
-            }
-        }
-
         if ($request->has('member_ids')) {
             $project->users()->sync($validated['member_ids'] ?? []);
+        }
+
+        // Send email to newly added assignees only
+        $newMemberIds = [];
+        if ($request->has('member_ids')) {
+            $newMemberIds = array_diff($validated['member_ids'] ?? [], $oldMemberIds);
+        }
+        $newRecipientIds = collect($newMemberIds);
+
+        // If manager changed and wasn't already assigned to this project
+        if (!empty($project->manager_id) && $project->manager_id != $oldManagerId) {
+            if (!in_array($project->manager_id, $oldMemberIds)) {
+                $newRecipientIds->push($project->manager_id);
+            }
+        }
+        $newRecipientIds = $newRecipientIds->unique()->values();
+
+        if ($newRecipientIds->isNotEmpty()) {
+            $usersToNotify = User::whereIn('id', $newRecipientIds)->get();
+            if ($usersToNotify->isNotEmpty()) {
+                Notification::send($usersToNotify, new ProjectAssigned($project));
+            }
         }
 
         $project->load(['manager', 'users', 'sections'])

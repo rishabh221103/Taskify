@@ -114,10 +114,14 @@ export function AppProvider({ children }) {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
-      if (data && data.token) {
-        sessionStorage.setItem("authToken", data.token);
+      if (!data || !data.token || !data.user) {
+        throw new Error(data?.message || "Login failed. Please check your credentials.");
       }
+      sessionStorage.setItem("authToken", data.token);
       const mapped = mapApiUser(data.user);
+      if (!mapped) {
+        throw new Error("Unable to parse user session.");
+      }
       setCurrentUser(mapped);
       setCurrentUserId(mapped.id);
       sessionStorage.setItem("currentUserId", mapped.id);
@@ -129,7 +133,7 @@ export function AppProvider({ children }) {
       }
       return { success: true, user: mapped };
     } catch (e) {
-      return { success: false, error: e.message };
+      return { success: false, error: e.message || "Login failed. Please try again." };
     }
   };
 

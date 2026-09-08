@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
@@ -53,8 +54,8 @@ class TaskController extends Controller
             
             // Notify newly assigned members
             $assignees = User::whereIn('id', $validated['assignee_ids'])->get();
-            foreach ($assignees as $assignee) {
-                $assignee->notify(new TaskAssigned($task));
+            if ($assignees->isNotEmpty()) {
+                Notification::send($assignees, new TaskAssigned($task));
             }
         }
 
@@ -77,6 +78,12 @@ class TaskController extends Controller
         $validated = $request->validated();
 
         $oldAssigneeIds = $task->assignees()->pluck('users.id')->toArray();
+        $oldDueDate = $task->due_date ? $task->due_date->toDateString() : null;
+
+        // Reset reminder_sent_at if due_date is updated so a future reminder can fire
+        if (array_key_exists('due_date', $validated) && $validated['due_date'] !== $oldDueDate) {
+            $validated['reminder_sent_at'] = null;
+        }
 
         $task->update($validated);
 
@@ -87,8 +94,8 @@ class TaskController extends Controller
             $newAssigneeIds = array_diff($validated['assignee_ids'], $oldAssigneeIds);
             if (!empty($newAssigneeIds)) {
                 $newAssignees = User::whereIn('id', $newAssigneeIds)->get();
-                foreach ($newAssignees as $assignee) {
-                    $assignee->notify(new TaskAssigned($task));
+                if ($newAssignees->isNotEmpty()) {
+                    Notification::send($newAssignees, new TaskAssigned($task));
                 }
             }
         }

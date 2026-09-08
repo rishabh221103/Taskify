@@ -46,9 +46,10 @@ class TaskAssigned extends Notification implements ShouldQueue
             : 'No Project';
 
         $isOwner = method_exists($notifiable, 'hasRole') && $notifiable->hasRole('owner');
+        $frontendUrl = rtrim(config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:5173')), '/');
         $link = $isOwner
-            ? 'https://taskm.website-design-india.com/admin/projects/' . $this->task->project_id
-            : 'https://taskm.website-design-india.com/member/tasks';
+            ? $frontendUrl . '/admin/projects/' . $this->task->project_id
+            : $frontendUrl . '/member/tasks';
 
         return (new MailMessage)
             ->subject('New Task Assignment: ' . $this->task->title)
